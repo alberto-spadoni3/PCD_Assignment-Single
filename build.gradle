@@ -1,0 +1,72 @@
+apply plugin: 'java'
+
+def versions = [
+        ScalaBinary: "2.13"
+]
+
+task threadsCLI(type: JavaExec) {
+    classpath = sourceSets.main.runtimeClasspath
+
+    main = 'part1.threads.cli.Main'
+}
+
+task threadsGUI(type: JavaExec) {
+    classpath = sourceSets.main.runtimeClasspath
+
+    main = 'part1.threads.gui.Main'
+}
+
+task tasksCLI(type: JavaExec) {
+    classpath = sourceSets.main.runtimeClasspath
+
+    main = 'part1.tasks.cli.Main'
+}
+
+task tasksGUI(type: JavaExec) {
+    classpath = sourceSets.main.runtimeClasspath
+
+    main = 'part1.tasks.gui.Main'
+}
+
+task rxCLI(type: JavaExec) {
+    classpath = sourceSets.main.runtimeClasspath
+
+    main = 'part1.reactive.cli.Main'
+}
+
+task rxGUI(type: JavaExec) {
+    classpath = sourceSets.main.runtimeClasspath
+
+    main = 'part1.reactive.gui.Main'
+}
+
+task eventloopCLI(type: JavaExec) {
+    classpath = sourceSets.main.runtimeClasspath
+
+    main = 'part1.eventloop.cli.Main'
+}
+
+task eventloopGUI(type: JavaExec) {
+    classpath = sourceSets.main.runtimeClasspath
+
+    main = 'part1.eventloop.gui.Main'
+}
+
+task actorsCLI(type: JavaExec) {
+    classpath = sourceSets.main.runtimeClasspath
+
+    main = 'part1.actors.cli.Main'
+}
+
+repositories {
+    mavenCentral()
+}
+
+dependencies {
+    implementation 'org.apache.pdfbox:pdfbox:2.0.24'
+    implementation 'io.reactivex.rxjava3:rxjava:3.1.2'
+    implementation 'io.vertx:vertx-core:4.2.1'
+    implementation platform("com.typesafe.akka:akka-bom_${versions.ScalaBinary}:2.6.17")
+    implementation "com.typesafe.akka:akka-actor-typed_${versions.ScalaBinary}"
+    implementation 'ch.qos.logback:logback-classic:1.2.6'
+}
