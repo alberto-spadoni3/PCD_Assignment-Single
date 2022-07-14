@@ -1,6 +1,5 @@
 package part1.eventloop.gui;
 
-import io.vertx.core.AbstractVerticle;
 import io.vertx.core.CompositeFuture;
 import io.vertx.core.Promise;
 import io.vertx.core.Vertx;
@@ -40,7 +39,7 @@ public class Master implements Runnable {
 
         vertx.deployVerticle(new FileLoader(terminationFlag), h -> verticlesID[1] = h.result());
 
-        vertx.deployVerticle(new docAnalyzer(wordToFind, terminationFlag, computationComplete, documentsCounter), h -> verticlesID[2] = h.result());
+        vertx.deployVerticle(new DocAnalyzer(wordToFind, terminationFlag, computationComplete, documentsCounter), h -> verticlesID[2] = h.result());
 
         vertx.deployVerticle(new GUIUpdater(view, documentsCounter, terminationFlag), h -> verticlesID[3] = h.result());
 

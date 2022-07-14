@@ -1,7 +1,13 @@
-package part1.actors.cli;
+package part1.actors.gui;
 
-import akka.actor.typed.*;
-import akka.actor.typed.javadsl.*;
+import akka.actor.typed.ActorRef;
+import akka.actor.typed.Behavior;
+import akka.actor.typed.DispatcherSelector;
+import akka.actor.typed.PostStop;
+import akka.actor.typed.javadsl.AbstractBehavior;
+import akka.actor.typed.javadsl.ActorContext;
+import akka.actor.typed.javadsl.Behaviors;
+import akka.actor.typed.javadsl.Receive;
 import part1.threads.cli.DocumentsCounter;
 import part1.threads.gui.TerminationFlag;
 
@@ -10,18 +16,21 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Objects;
 import java.util.Random;
+import java.util.concurrent.atomic.AtomicInteger;
 
 public class ExplorerActor extends AbstractBehavior<RootActor.Command> {
     private final DocumentsCounter documentsCounter;
+    private final TerminationFlag terminationFlag;
     private final List<ActorRef<RootActor.Command>> childActors;
     private final ActorRef<RootActor.Command> rootActorRef;
+    private final AtomicInteger id;
 
     public static final class StartExploring implements RootActor.Command {
         public final File rootDir;
         public final String wordToFind;
 
-        public StartExploring(String rootDir, String wordToFind) {
-            this.rootDir = new File(rootDir);
+        public StartExploring(File rootDir, String wordToFind) {
+            this.rootDir = rootDir;
             this.wordToFind = wordToFind;
         }
     }
@@ -42,15 +51,17 @@ public class ExplorerActor extends AbstractBehavior<RootActor.Command> {
         }
     }
 
-    private ExplorerActor(ActorContext<RootActor.Command> context, DocumentsCounter documentsCounter, ActorRef<RootActor.Command> rootActorRef) {
+    private ExplorerActor(ActorContext<RootActor.Command> context, DocumentsCounter documentsCounter, TerminationFlag terminationFlag, ActorRef<RootActor.Command> rootActorRef) {
         super(context);
         this.documentsCounter = documentsCounter;
+        this.terminationFlag = terminationFlag;
         this.rootActorRef = rootActorRef;
         this.childActors = new LinkedList<>();
+        this.id = new AtomicInteger();
     }
 
-    public static Behavior<RootActor.Command> create(DocumentsCounter documentsCounter, ActorRef<RootActor.Command> rootActorRef) {
-        return Behaviors.setup(context -> new ExplorerActor(context, documentsCounter, rootActorRef));
+    public static Behavior<RootActor.Command> create(DocumentsCounter documentsCounter, TerminationFlag terminationFlag, ActorRef<RootActor.Command> rootActorRef) {
+        return Behaviors.setup(context -> new ExplorerActor(context, documentsCounter, terminationFlag, rootActorRef));
     }
 
     @Override
@@ -66,17 +77,23 @@ public class ExplorerActor extends AbstractBehavior<RootActor.Command> {
 
     private void discover(File rootDir, StartExploring command) {
         for (File file : Objects.requireNonNull(rootDir.listFiles())) {
-            if (file.isDirectory())
-                this.discover(file, command);
-            else if (file.getName().toLowerCase().endsWith(".pdf")) {
-                getContext()
-                        .spawn(LoaderActor.create(documentsCounter,
-                               getContext().getSelf()), "Loader-" + assignID(),
-                               DispatcherSelector.blocking())
-                        .tell(new LoaderActor.LoadFile(file, command.wordToFind));
-                getContext().getLog().debug("Found -> " + file.getName());
-                this.documentsCounter.incrementDocumentsFound();
-            }
+            if (this.terminationFlag.canProceed()) {
+                if (file.isDirectory())
+                    this.discover(file, command);
+                else if (file.getName().toLowerCase().endsWith(".pdf")) {
+                    getContext()
+                            .spawn(LoaderActor.create(documentsCounter,
+                                                      terminationFlag,
+                                                      getContext().getSelf()), "Loader-" + this.id.getAndIncrement(),
+                                    DispatcherSelector.blocking())
+                            .tell(new LoaderActor.LoadFile(file, command.wordToFind));
+                    getContext().getLog().debug("Found -> " + file.getName());
+                    this.documentsCounter.incrementDocumentsFound();
+                }
+            } else if (this.terminationFlag.isPaused())
+                this.terminationFlag.waitToBeResumed();
+            else
+                break;
         }
     }
 
@@ -103,9 +120,5 @@ public class ExplorerActor extends AbstractBehavior<RootActor.Command> {
         rootActorRef.tell(RootActor.EndComputation.INSTANCE);
         getContext().getLog().info(getContext().getSelf().path().name() + " stopped");
         return Behaviors.same();
-    }
-
-    private String assignID() {
-        return Integer.toString(new Random().nextInt(1024));
     }
 }

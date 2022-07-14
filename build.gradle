@@ -58,6 +58,13 @@ task actorsCLI(type: JavaExec) {
     main = 'part1.actors.cli.Main'
 }
 
+task actorsGUI(type: JavaExec) {
+    classpath = sourceSets.main.runtimeClasspath
+
+    main = 'part1.actors.gui.Main'
+}
+
+
 repositories {
     mavenCentral()
 }

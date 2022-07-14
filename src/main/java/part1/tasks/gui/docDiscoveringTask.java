@@ -38,7 +38,7 @@ public class docDiscoveringTask implements Callable<List<Future<Future<Void>>>> 
                 }
             } else if (this.utils.terminationFlag.isPaused())
                 this.utils.terminationFlag.waitToBeResumed();
-            else { // the stop button is been pressed
+            else { // the stop button is being pressed
                 break;
             }
         }
