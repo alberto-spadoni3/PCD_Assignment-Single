@@ -18,7 +18,7 @@ public class GUIUpdater extends AbstractVerticle {
 
     @Override
     public void start() throws Exception {
-        vertx.setPeriodic(10, this::updateGUI);
+        vertx.setPeriodic(20, this::updateGUI);
     }
 
     private void updateGUI(Long id) {
