@@ -44,7 +44,7 @@ public class Master extends Worker {
         }
 
         long duration = System.currentTimeMillis() - startTime;
-        System.out.println("\nDuration; " + duration + " with " + nCoresForBestPerformance + " cores used.");
+        System.out.println("\nDuration: " + duration + "ms, with " + nCoresForBestPerformance + " cores used.");
         System.out.println("Documents found: " + docCounter.getDocumentsFound());
         System.out.println("Documents containing the word " + this.wordToFind + ": " + docCounter.getWordOccurrences());
     }
