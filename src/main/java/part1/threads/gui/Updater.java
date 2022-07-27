@@ -3,6 +3,8 @@ package part1.threads.gui;
 import part1.threads.cli.DocumentsCounter;
 import part1.threads.cli.Worker;
 
+import java.util.List;
+
 public class Updater extends Worker {
     private final View view;
     private final DocumentsCounter documentsCounter;
@@ -39,8 +41,7 @@ public class Updater extends Worker {
     }
 
     private void updateView() {
-        this.view.update(this.documentsCounter.getDocumentsFound(),
-                         this.documentsCounter.getDocumentsAnalyzed(),
-                         this.documentsCounter.getWordOccurrences());
+        List<Integer> temp = this.documentsCounter.getDocFoundAnalyzedAndWordOccurences();
+        this.view.update(temp.get(0), temp.get(1), temp.get(2));
     }
 }

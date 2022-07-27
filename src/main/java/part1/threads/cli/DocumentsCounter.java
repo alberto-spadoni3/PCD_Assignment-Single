@@ -1,5 +1,8 @@
 package part1.threads.cli;
 
+import java.util.Arrays;
+import java.util.List;
+
 public class DocumentsCounter {
     private int documentsWithWord;
     private int documentsFound;
@@ -33,5 +36,9 @@ public class DocumentsCounter {
 
     public synchronized int getDocumentsAnalyzed() {
         return this.documentsAnalyzed;
+    }
+
+    public synchronized List<Integer> getDocFoundAnalyzedAndWordOccurences() {
+        return Arrays.asList(this.documentsFound, this.documentsAnalyzed, this.documentsWithWord);
     }
 }
