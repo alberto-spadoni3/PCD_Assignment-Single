@@ -5,6 +5,8 @@ import part1.threads.cli.DocumentsCounter;
 import part1.threads.gui.TerminationFlag;
 import part1.threads.gui.View;
 
+import java.util.List;
+
 public class GUIUpdater extends AbstractVerticle {
     private final View view;
     private final DocumentsCounter documentsCounter;
@@ -24,11 +26,11 @@ public class GUIUpdater extends AbstractVerticle {
     private void updateGUI(Long id) {
         vertx.executeBlocking( handler -> {
             if (terminationFlag.isNotStopped()) {
-                if (terminationFlag.isPaused())
+                if (terminationFlag.isPaused()) {
                     terminationFlag.waitToBeResumed();
-                view.update(documentsCounter.getDocumentsFound(),
-                        documentsCounter.getDocumentsAnalyzed(),
-                        documentsCounter.getWordOccurrences());
+                }
+                List<Integer> temp = this.documentsCounter.getDocFoundAnalyzedAndWordOccurences();
+                this.view.update(temp.get(0), temp.get(1), temp.get(2));
             } else
                 vertx.cancelTimer(id);
         });

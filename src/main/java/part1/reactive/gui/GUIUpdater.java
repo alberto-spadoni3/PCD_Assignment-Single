@@ -4,6 +4,8 @@ import part1.threads.cli.DocumentsCounter;
 import part1.threads.gui.TerminationFlag;
 import part1.threads.gui.View;
 
+import java.util.List;
+
 public class GUIUpdater implements Runnable {
     private final View view;
     private final DocumentsCounter documentsCounter;
@@ -18,11 +20,11 @@ public class GUIUpdater implements Runnable {
     @Override
     public void run() {
         while (terminationFlag.isNotStopped()) {
-            if (terminationFlag.isPaused())
+            if (terminationFlag.isPaused()) {
                 terminationFlag.waitToBeResumed();
-            view.update(documentsCounter.getDocumentsFound(),
-                    documentsCounter.getDocumentsAnalyzed(),
-                    documentsCounter.getWordOccurrences());
+            }
+            List<Integer> temp = this.documentsCounter.getDocFoundAnalyzedAndWordOccurences();
+            this.view.update(temp.get(0), temp.get(1), temp.get(2));
             try {
                 Thread.sleep(20);
             } catch (InterruptedException ignored) {}

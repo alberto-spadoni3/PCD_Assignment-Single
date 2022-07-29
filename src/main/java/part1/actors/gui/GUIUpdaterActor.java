@@ -10,6 +10,7 @@ import part1.threads.cli.DocumentsCounter;
 import part1.threads.gui.TerminationFlag;
 import part1.threads.gui.View;
 
+import java.util.List;
 import java.util.function.ToDoubleBiFunction;
 
 public class GUIUpdaterActor extends AbstractBehavior<RootActor.Command> {
@@ -50,9 +51,8 @@ public class GUIUpdaterActor extends AbstractBehavior<RootActor.Command> {
 
     private Behavior<RootActor.Command> updateGUI() {
         while (terminationFlag.canProceed()) {
-            view.update(documentsCounter.getDocumentsFound(),
-                        documentsCounter.getDocumentsAnalyzed(),
-                        documentsCounter.getWordOccurrences());
+            List<Integer> temp = this.documentsCounter.getDocFoundAnalyzedAndWordOccurences();
+            this.view.update(temp.get(0), temp.get(1), temp.get(2));
             try {
                 Thread.sleep(20);
             } catch (InterruptedException ignored) {}
