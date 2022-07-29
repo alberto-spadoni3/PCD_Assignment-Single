@@ -4,6 +4,7 @@ import javax.swing.*;
 import java.awt.*;
 import java.io.File;
 import java.util.ArrayList;
+import org.apache.commons.lang3.SystemUtils;
 
 public class GUI extends JFrame {
     private JButton startButton;
@@ -177,7 +178,10 @@ public class GUI extends JFrame {
             if (dirChooser.showOpenDialog(null) == JFileChooser.APPROVE_OPTION) {
                 this.selectedDir = dirChooser.getSelectedFile().getAbsolutePath();
 
-                String[] splittedPath = this.selectedDir.split("/");
+                String[] splittedPath = SystemUtils.IS_OS_WINDOWS ?
+                        this.selectedDir.replace("\\", "/").split("/") :
+                        this.selectedDir.split("/");
+
                 String dirNameFromPath = splittedPath[splittedPath.length - 1];
                 this.selectedDirLabel.setText(dirNameFromPath);
                 this.directorySelected = true;

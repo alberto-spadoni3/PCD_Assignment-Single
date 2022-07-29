@@ -71,6 +71,7 @@ repositories {
 
 dependencies {
     implementation 'org.apache.pdfbox:pdfbox:2.0.24'
+    implementation 'org.apache.commons:commons-lang3:3.0'
     implementation 'io.reactivex.rxjava3:rxjava:3.1.2'
     implementation 'io.vertx:vertx-core:4.2.1'
     implementation platform("com.typesafe.akka:akka-bom_${versions.ScalaBinary}:2.6.17")
