@@ -6,7 +6,7 @@ public class TerminationFlag {
 
     public TerminationFlag() {}
 
-    public void reset() {
+    public synchronized void reset() {
         this.stopped = false;
         this.paused = false;
     }

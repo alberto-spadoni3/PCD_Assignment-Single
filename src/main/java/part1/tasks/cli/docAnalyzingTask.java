@@ -7,15 +7,25 @@ import java.util.concurrent.Callable;
 public class docAnalyzingTask implements Callable<Void> {
     private final Document docContent;
     private final Utils utils;
+    private final boolean GUIVersion;    // 0 = CLI - 1 = GUI
 
-    public docAnalyzingTask(Document docContent, Utils utils) {
+    public docAnalyzingTask(Document docContent, Utils utils, boolean GUIVersion) {
         this.docContent = docContent;
         this.utils = utils;
+        this.GUIVersion = GUIVersion;
     }
 
     @Override
     public Void call() {
-        this.checkWordPresence(docContent);
+        if(this.GUIVersion) {
+            if (this.utils.terminationFlag.isPaused())
+                this.utils.terminationFlag.waitToBeResumed();
+            this.checkWordPresence(docContent);
+            this.utils.documentsCounter.incrementDocumentsAnalyzed();
+        }
+        else {
+            this.checkWordPresence(docContent);
+        }
         return null;
     }
 

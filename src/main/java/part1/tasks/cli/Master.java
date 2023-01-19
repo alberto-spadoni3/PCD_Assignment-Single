@@ -25,8 +25,8 @@ public class Master extends Thread {
     public void run() {
         int nCores = Runtime.getRuntime().availableProcessors();
         ExecutorService executorForDiscovering = Executors.newSingleThreadExecutor();
-        ExecutorService executorForLoading = Executors.newFixedThreadPool(5);
-        ExecutorService executorForAnalyzing = Executors.newFixedThreadPool(5);
+        ExecutorService executorForLoading = Executors.newFixedThreadPool(nCores);
+        ExecutorService executorForAnalyzing = Executors.newFixedThreadPool(nCores + 1);
 
         DocumentsCounter documentsCounter = new DocumentsCounter();
         Utils utils = new Utils(executorForLoading, executorForAnalyzing, documentsCounter, null, wordToFind);
@@ -34,7 +34,7 @@ public class Master extends Thread {
         long startTime = System.currentTimeMillis();
         System.out.println("Started...");
 
-        Future<List<Future<Future<Void>>>> tasks = executorForDiscovering.submit(new docDiscoveringTask(rootDirectory, utils));
+        Future<List<Future<Future<Void>>>> tasks = executorForDiscovering.submit(new docDiscoveringTask(rootDirectory, utils, false));
 
         try {
             for (Future<Future<Void>> docFuture : tasks.get())

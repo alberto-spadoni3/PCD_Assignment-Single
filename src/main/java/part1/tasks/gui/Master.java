@@ -1,5 +1,6 @@
 package part1.tasks.gui;
 
+import part1.tasks.cli.docDiscoveringTask;
 import part1.tasks.cli.Utils;
 import part1.threads.cli.DocumentsCounter;
 import part1.threads.gui.TerminationFlag;
@@ -30,8 +31,8 @@ public class Master extends Thread {
     public void run() {
         int nCores = Runtime.getRuntime().availableProcessors();
         ExecutorService executorForDiscovering = Executors.newSingleThreadExecutor();
-        ExecutorService executorForLoading = Executors.newFixedThreadPool(5);
-        ExecutorService executorForAnalyzing = Executors.newFixedThreadPool(5);
+        ExecutorService executorForLoading = Executors.newFixedThreadPool(nCores);
+        ExecutorService executorForAnalyzing = Executors.newFixedThreadPool(nCores + 1);
         ExecutorService executorForUpdatingGUI = Executors.newSingleThreadExecutor();
 
         DocumentsCounter documentsCounter = new DocumentsCounter();
@@ -40,7 +41,7 @@ public class Master extends Thread {
         long startTime = System.currentTimeMillis();
         System.out.println("Started...");
 
-        Future<List<Future<Future<Void>>>> tasks = executorForDiscovering.submit(new docDiscoveringTask(rootDirectory, utils));
+        Future<List<Future<Future<Void>>>> tasks = executorForDiscovering.submit(new docDiscoveringTask(rootDirectory, utils, true));
         executorForUpdatingGUI.execute(new ViewUpdateTask(view, utils));
 
         try {
@@ -51,11 +52,12 @@ public class Master extends Thread {
         }
 
         long duration = System.currentTimeMillis() - startTime;
+        utils.terminationFlag.stop();
 
         executorForDiscovering.shutdown();
         executorForLoading.shutdown();
         executorForAnalyzing.shutdown();
-        executorForUpdatingGUI.shutdownNow();
+        executorForUpdatingGUI.shutdown();
 
         this.view.setComputationDuration(duration);
         this.view.computationDone();

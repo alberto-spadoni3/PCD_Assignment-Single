@@ -13,24 +13,39 @@ import java.util.concurrent.Future;
 public class docLoadingTask implements Callable<Future<Void>> {
     private final File docToLoad;
     private final Utils utils;
+    private final boolean GUIVersion;    // 0 = CLI - 1 = GUI
 
-    public docLoadingTask(File docToLoad, Utils utils) {
+    public docLoadingTask(File docToLoad, Utils utils, boolean GUIVersion) {
         this.docToLoad = docToLoad;
         this.utils = utils;
+        this.GUIVersion = GUIVersion;
     }
 
     @Override
     public Future<Void> call() {
         Future<Void> task = null;
-        try {
-            task = this.loadDocument(docToLoad);
-        } catch (IOException e) {
-            System.out.println("Problem in loading " + docToLoad);
+        if (this.GUIVersion) {
+            try {
+                if (this.utils.terminationFlag.isNotStopped()) {
+                    if (this.utils.terminationFlag.isPaused())
+                        this.utils.terminationFlag.waitToBeResumed();
+                    task = this.loadDocument(docToLoad, true);
+                }
+            } catch (IOException e) {
+                System.out.println("Problem in loading " + docToLoad);
+            }
+        }
+        else {
+            try {
+                task = this.loadDocument(docToLoad, false);
+            } catch (IOException e) {
+                System.out.println("Problem in loading " + docToLoad);
+            }
         }
         return task;
     }
 
-    private Future<Void> loadDocument(File file) throws IOException {
+    private Future<Void> loadDocument(File file, boolean GUIVersion) throws IOException {
         PDDocument documentLoaded = PDDocument.load(file);
         AccessPermission permission = documentLoaded.getCurrentAccessPermission();
         if (!permission.canExtractContent())
@@ -47,6 +62,6 @@ public class docLoadingTask implements Callable<Future<Void>> {
 
         Document doc = new Document(file.getName(), documentText.toString());
         documentLoaded.close();
-        return this.utils.executorForAnalyzing.submit(new docAnalyzingTask(doc, utils));
+        return this.utils.executorForAnalyzing.submit(new docAnalyzingTask(doc, utils, GUIVersion));
     }
 }
