@@ -1,9 +1,6 @@
 package part1.threads.gui;
 
-import part1.threads.cli.ConcurrentBuffer;
-import part1.threads.cli.Document;
-import part1.threads.cli.DocumentsCounter;
-import part1.threads.cli.Worker;
+import part1.threads.cli.*;
 
 import java.io.File;
 
@@ -24,9 +21,10 @@ public class Master extends Worker {
     @Override
     public void run() {
         // value fount for the best performance
-        int nCoresForBestPerformance = 3;
-        int nLoaderThreads = nCoresForBestPerformance + 1;  // IO-intensive
-        int nAnalyzerThreads = nCoresForBestPerformance;    // CPU intensive
+        //int nCoresForBestPerformance = 3;
+        int nCore = Runtime.getRuntime().availableProcessors();
+        int nLoaderThreads = nCore;         // IO-intensive
+        int nAnalyzerThreads = nCore + 1;   // CPU intensive
 
         DocumentsCounter docCounter = new DocumentsCounter();
 
@@ -66,7 +64,8 @@ public class Master extends Worker {
         updater.interrupt(); // This invocation stops the thread that updates the GUI
         this.view.computationDone();
 
-        System.out.println("\nDuration; " + duration);
+        System.out.println("\nDuration: " + duration + "ms, with " + nCore + " cores used (" + nLoaderThreads +
+                " Loader, " + nAnalyzerThreads + " Analyzer)");
         System.out.println("Documents found: " + docCounter.getDocumentsFound());
         System.out.println("Documents analyzed: " + docCounter.getDocumentsAnalyzed());
         System.out.println("Documents containing the word " + this.wordToFind + ": " + docCounter.getWordOccurrences());

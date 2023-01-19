@@ -15,14 +15,15 @@ public class Master extends Worker {
     @Override
     public void run() {
         // value fount for the best performance
-        int nCoresForBestPerformance = 3;
-        int nLoaderThreads = nCoresForBestPerformance + 1;  // IO-intensive
-        int nAnalyzerThreads = nCoresForBestPerformance;    // CPU intensive
+        //int nCoresForBestPerformance = 3;
+        int nCore = Runtime.getRuntime().availableProcessors();
+        int nLoaderThreads = nCore;         // IO-intensive
+        int nAnalyzerThreads = nCore + 1;   // CPU intensive
 
         long startTime = System.currentTimeMillis();
 
-        DocumentsCounter docCounter = new DocumentsCounter();
-        ConcurrentBuffer<File> documentsDiscovered = new ConcurrentBuffer<>();
+        DocumentsCounter docCounter = new DocumentsCounter();   //Monitor per il conteggio delle parole, dei doc trovati e analizzati
+        ConcurrentBuffer<File> documentsDiscovered = new ConcurrentBuffer<>();  //Buffer per l'inserimento di ???
         Discoverer discoverer = new Discoverer(this.rootDirectory, documentsDiscovered, docCounter);
         discoverer.start();
 
@@ -44,7 +45,8 @@ public class Master extends Worker {
         }
 
         long duration = System.currentTimeMillis() - startTime;
-        System.out.println("\nDuration: " + duration + "ms, with " + nCoresForBestPerformance + " cores used.");
+        System.out.println("\nDuration: " + duration + "ms, with " + nCore + " cores used (" + nLoaderThreads +
+                " Loader, " + nAnalyzerThreads + " Analyzer)");
         System.out.println("Documents found: " + docCounter.getDocumentsFound());
         System.out.println("Documents containing the word " + this.wordToFind + ": " + docCounter.getWordOccurrences());
     }

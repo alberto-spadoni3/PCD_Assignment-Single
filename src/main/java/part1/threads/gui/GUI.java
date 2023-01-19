@@ -67,7 +67,7 @@ public class GUI extends JFrame {
 
         JPanel wordSelectionPanel = new JPanel();
         wordSelectionPanel.setBackground(new Color(0xE0E0E0));
-        wordSelectionPanel.add(getLabelWithCustomTextSize("Word to search", this.TEXT_SIZE));
+        wordSelectionPanel.add(getLabelWithCustomTextSize("Word to search (press enter after typing)", this.TEXT_SIZE));
         this.wordToSearch = new JTextField(10);
         this.wordToSearch.setFont(new Font(null, Font.PLAIN, this.TEXT_SIZE));
         wordSelectionPanel.add(wordToSearch);

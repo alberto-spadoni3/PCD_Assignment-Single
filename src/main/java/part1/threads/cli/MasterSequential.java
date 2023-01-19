@@ -32,7 +32,7 @@ public class MasterSequential extends Worker {
         new Analyzer(0, documentsLoaded, docCounter, this.wordToSearch, allDocumentsAnalyzed).run();
 
         long duration = System.currentTimeMillis() - startTime;
-        System.out.println("Duration seq; " + duration);
+        System.out.println("Duration seq: " + duration);
         System.out.println("Documents found: " + docCounter.getDocumentsFound());
         System.out.println("Documents containing the word " + this.wordToSearch + ": " + docCounter.getWordOccurrences());
     }
