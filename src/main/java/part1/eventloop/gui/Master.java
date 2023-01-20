@@ -4,6 +4,9 @@ import io.vertx.core.CompositeFuture;
 import io.vertx.core.Promise;
 import io.vertx.core.Vertx;
 import part1.eventloop.cli.Main;
+import part1.eventloop.cli.FileDiscoverer;
+import part1.eventloop.cli.FileLoader;
+import part1.eventloop.cli.DocAnalyzer;
 import part1.threads.cli.DocumentsCounter;
 import part1.threads.gui.TerminationFlag;
 import part1.threads.gui.View;
@@ -35,7 +38,7 @@ public class Master implements Runnable {
 
         long startTime = System.currentTimeMillis();
 
-        vertx.deployVerticle(new FileDiscoverer(rootDirectory, terminationFlag, documentsCounter), h -> verticlesID[0] = h.result());
+        vertx.deployVerticle(new FileDiscoverer(rootDirectory, documentsCounter, terminationFlag), h -> verticlesID[0] = h.result());
 
         vertx.deployVerticle(new FileLoader(terminationFlag), h -> verticlesID[1] = h.result());
 

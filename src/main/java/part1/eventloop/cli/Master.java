@@ -30,7 +30,7 @@ public class Master extends AbstractVerticle {
         vertx.deployVerticle(new FileLoader())
                 .onSuccess(h -> verticlesID[1] = deploymentID());
 
-        vertx.deployVerticle(new docAnalyzer(wordToFind, computationComplete, documentsCounter))
+        vertx.deployVerticle(new DocAnalyzer(wordToFind, computationComplete, documentsCounter))
                 .onSuccess(h -> verticlesID[2] = deploymentID());
 
         computationComplete.future().onComplete(handler -> {
