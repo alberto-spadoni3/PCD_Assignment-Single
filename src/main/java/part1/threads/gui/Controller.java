@@ -1,5 +1,8 @@
 package part1.threads.gui;
 
+import part1.common.TerminationFlag;
+import part1.common.View;
+
 import java.io.File;
 
 public class Controller implements InputListener {

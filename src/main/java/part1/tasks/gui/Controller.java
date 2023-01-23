@@ -1,8 +1,8 @@
 package part1.tasks.gui;
 
 import part1.threads.gui.InputListener;
-import part1.threads.gui.TerminationFlag;
-import part1.threads.gui.View;
+import part1.common.TerminationFlag;
+import part1.common.View;
 
 import java.io.File;
 

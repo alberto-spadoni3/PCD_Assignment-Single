@@ -4,7 +4,7 @@ import io.reactivex.rxjava3.core.Observable;
 import io.reactivex.rxjava3.schedulers.Schedulers;
 import part1.threads.cli.Document;
 import part1.threads.cli.DocumentsCounter;
-import part1.threads.gui.TerminationFlag;
+import part1.common.TerminationFlag;
 
 public class DocAnalyzer extends ActiveComponent {
     private final String wordToFind;

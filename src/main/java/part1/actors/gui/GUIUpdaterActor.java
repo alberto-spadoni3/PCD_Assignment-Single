@@ -7,8 +7,8 @@ import akka.actor.typed.javadsl.ActorContext;
 import akka.actor.typed.javadsl.Behaviors;
 import akka.actor.typed.javadsl.Receive;
 import part1.threads.cli.DocumentsCounter;
-import part1.threads.gui.TerminationFlag;
-import part1.threads.gui.View;
+import part1.common.TerminationFlag;
+import part1.common.View;
 import part1.actors.cli.RootActor;
 
 import java.util.List;

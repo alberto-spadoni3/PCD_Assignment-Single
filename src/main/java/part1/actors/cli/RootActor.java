@@ -9,8 +9,8 @@ import akka.actor.typed.javadsl.Behaviors;
 import akka.actor.typed.javadsl.Receive;
 import part1.actors.gui.GUIUpdaterActor;
 import part1.threads.cli.DocumentsCounter;
-import part1.threads.gui.TerminationFlag;
-import part1.threads.gui.View;
+import part1.common.TerminationFlag;
+import part1.common.View;
 
 import java.io.File;
 

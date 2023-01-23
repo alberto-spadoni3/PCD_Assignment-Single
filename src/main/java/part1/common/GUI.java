@@ -1,10 +1,11 @@
-package part1.threads.gui;
+package part1.common;
 
 import javax.swing.*;
 import java.awt.*;
 import java.io.File;
 import java.util.ArrayList;
 import org.apache.commons.lang3.SystemUtils;
+import part1.threads.gui.InputListener;
 
 public class GUI extends JFrame {
     private JButton startButton;

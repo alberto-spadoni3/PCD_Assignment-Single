@@ -1,8 +1,8 @@
 package part1.reactive.gui;
 
 import part1.threads.cli.DocumentsCounter;
-import part1.threads.gui.TerminationFlag;
-import part1.threads.gui.View;
+import part1.common.TerminationFlag;
+import part1.common.View;
 
 import java.util.List;
 

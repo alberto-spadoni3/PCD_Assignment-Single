@@ -9,7 +9,7 @@ import akka.actor.typed.javadsl.Behaviors;
 import akka.actor.typed.javadsl.Receive;
 import part1.threads.cli.Document;
 import part1.threads.cli.DocumentsCounter;
-import part1.threads.gui.TerminationFlag;
+import part1.common.TerminationFlag;
 
 public class AnalyzerActor extends AbstractBehavior<RootActor.Command> {
     private final String wordToFind;

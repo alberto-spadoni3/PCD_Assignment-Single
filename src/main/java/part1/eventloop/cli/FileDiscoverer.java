@@ -4,7 +4,7 @@ import io.vertx.core.AbstractVerticle;
 import io.vertx.core.AsyncResult;
 import io.vertx.core.Promise;
 import part1.threads.cli.DocumentsCounter;
-import part1.threads.gui.TerminationFlag;
+import part1.common.TerminationFlag;
 
 import java.io.File;
 import java.util.ArrayList;

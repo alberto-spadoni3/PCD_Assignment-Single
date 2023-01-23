@@ -1,7 +1,6 @@
 package part1.tasks.cli;
 
 import part1.threads.cli.DocumentsCounter;
-import part1.threads.gui.TerminationFlag;
 
 import java.io.File;
 import java.util.List;

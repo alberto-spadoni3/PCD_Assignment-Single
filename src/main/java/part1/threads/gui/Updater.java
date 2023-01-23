@@ -1,5 +1,7 @@
 package part1.threads.gui;
 
+import part1.common.TerminationFlag;
+import part1.common.View;
 import part1.threads.cli.DocumentsCounter;
 import part1.threads.cli.Worker;
 

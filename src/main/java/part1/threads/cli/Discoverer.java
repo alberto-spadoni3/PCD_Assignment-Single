@@ -1,6 +1,6 @@
 package part1.threads.cli;
 
-import part1.threads.gui.TerminationFlag;
+import part1.common.TerminationFlag;
 
 import java.io.File;
 

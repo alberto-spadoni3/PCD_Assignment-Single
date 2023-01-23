@@ -6,7 +6,7 @@ import org.apache.pdfbox.pdmodel.PDDocument;
 import org.apache.pdfbox.pdmodel.encryption.AccessPermission;
 import org.apache.pdfbox.text.PDFTextStripper;
 import part1.threads.cli.Document;
-import part1.threads.gui.TerminationFlag;
+import part1.common.TerminationFlag;
 
 import java.io.File;
 import java.io.IOException;

@@ -1,4 +1,6 @@
-package part1.threads.gui;
+package part1.common;
+
+import part1.threads.gui.InputListener;
 
 import javax.swing.*;
 

@@ -1,7 +1,7 @@
 package part1.tasks.gui;
 
 import part1.tasks.cli.Utils;
-import part1.threads.gui.View;
+import part1.common.View;
 
 import java.util.List;
 

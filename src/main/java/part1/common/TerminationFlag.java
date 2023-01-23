@@ -1,4 +1,4 @@
-package part1.threads.gui;
+package part1.common;
 
 public class TerminationFlag {
     private boolean stopped;

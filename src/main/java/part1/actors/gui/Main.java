@@ -1,6 +1,6 @@
 package part1.actors.gui;
 
-import part1.threads.gui.View;
+import part1.common.View;
 
 public class Main {
     public static void main(String[] args) {
