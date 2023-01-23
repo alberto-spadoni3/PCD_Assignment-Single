@@ -35,9 +35,10 @@ public class Master implements Runnable {
             .count()
             .blockingSubscribe((wordOccurrences) -> {
                 long duration = System.currentTimeMillis() - start;
-                log("Were found a total of " + fileStream.count().blockingGet() + " PDFs");
-                log("The word " + wordToFind + " was found " + wordOccurrences + " times");
-                log("Duration " + duration);
+                log("Done in: " + duration + " ms");
+                log("Documents found: " + documentsCounter.getDocumentsFound());
+                log("Word occurrences: " + documentsCounter.getWordOccurrences());
+                System.exit(0);
             }, Throwable::printStackTrace);
     }
 

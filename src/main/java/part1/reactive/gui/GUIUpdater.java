@@ -19,15 +19,18 @@ public class GUIUpdater implements Runnable {
 
     @Override
     public void run() {
+        List<Integer> temp = null;
         while (terminationFlag.isNotStopped()) {
             if (terminationFlag.isPaused()) {
                 terminationFlag.waitToBeResumed();
             }
-            List<Integer> temp = this.documentsCounter.getDocFoundAnalyzedAndWordOccurences();
+            temp = this.documentsCounter.getDocFoundAnalyzedAndWordOccurences();
             this.view.update(temp.get(0), temp.get(1), temp.get(2));
             try {
                 Thread.sleep(20);
             } catch (InterruptedException ignored) {}
         }
+        temp = this.documentsCounter.getDocFoundAnalyzedAndWordOccurences();
+        this.view.update(temp.get(0), temp.get(1), temp.get(2));
     }
 }

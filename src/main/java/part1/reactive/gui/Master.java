@@ -5,6 +5,9 @@ import part1.threads.cli.Document;
 import part1.threads.cli.DocumentsCounter;
 import part1.threads.gui.TerminationFlag;
 import part1.threads.gui.View;
+import part1.reactive.cli.FileDiscoverer;
+import part1.reactive.cli.FileLoader;
+import part1.reactive.cli.DocAnalyzer;
 
 import java.io.File;
 import java.util.concurrent.Executors;
@@ -49,10 +52,11 @@ public class Master implements Runnable {
                     long duration = System.currentTimeMillis() - start;
                     view.setComputationDuration(duration);
                     view.computationDone();
-                    exec.shutdownNow();
-                    log("Were found a total of " + documentsCounter.getDocumentsFound() + " PDFs");
-                    log("The word " + wordToFind + " was found " + wordOccurrences + " times");
-                    log("Duration " + duration);
+                    log("Done in: " + duration + " ms");
+                    log("Documents found: " + documentsCounter.getDocumentsFound());
+                    log("Word occurrences: " + documentsCounter.getWordOccurrences());
+                    terminationFlag.stop();
+                    exec.shutdown();
                 }, Throwable::printStackTrace);
     }
 

@@ -11,27 +11,55 @@ import java.util.Objects;
 public class FileDiscoverer {
     private final File rootDirectory;
     private final DocumentsCounter documentsCounter;
+    private final TerminationFlag terminationFlag;
+    private final boolean GUIVersion;    // 0 = CLI - 1 = GUI
+
 
     public FileDiscoverer(File rootDirectory, DocumentsCounter documentsCounter) {
         this.rootDirectory = rootDirectory;
         this.documentsCounter = documentsCounter;
+        this.terminationFlag = null;
+        this.GUIVersion = false;
+    }
+
+    public FileDiscoverer(File rootDirectory, TerminationFlag terminationFlag, DocumentsCounter documentsCounter) {
+        this.rootDirectory = rootDirectory;
+        this.documentsCounter = documentsCounter;
+        this.terminationFlag = terminationFlag;
+        this.GUIVersion = true;
     }
 
     public Observable<File> buildFileStream() {
-        Observable<File> fileStream = Observable.create(subscriber -> {
+        return Observable.create(subscriber -> {
             explore(rootDirectory, subscriber);
             subscriber.onComplete();
         });
-        return fileStream.filter(fileName -> fileName.getName().endsWith(".pdf"));
 }
 
     private void explore(File rootDirectory, ObservableEmitter<File> subscriber) {
-        for (File file : Objects.requireNonNull(rootDirectory.listFiles())) {
-            if (file.isDirectory())
-                explore(file, subscriber);
-            else {
-                subscriber.onNext(file);
-                this.documentsCounter.incrementDocumentsFound();
+        if (this.GUIVersion) {
+            for (File file : Objects.requireNonNull(rootDirectory.listFiles())) {
+                if (terminationFlag.canProceed()) {
+                    if (file.isDirectory())
+                        explore(file, subscriber);
+                    else if (file.getName().endsWith(".pdf")) {
+                        subscriber.onNext(file);
+                        this.documentsCounter.incrementDocumentsFound();
+                    }
+                }
+                else if (terminationFlag.isPaused()) {
+                    terminationFlag.waitToBeResumed();
+                } else
+                    break;
+            }
+        } else {
+            for (File file : Objects.requireNonNull(rootDirectory.listFiles())) {
+                if (file.isDirectory())
+                    explore(file, subscriber);
+                else if (file.getName().endsWith(".pdf")) {
+                    subscriber.onNext(file);
+                    this.documentsCounter.incrementDocumentsFound();
+                }
             }
         }
     }
