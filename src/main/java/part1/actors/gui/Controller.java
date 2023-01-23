@@ -1,8 +1,7 @@
 package part1.actors.gui;
 
 import akka.actor.typed.ActorSystem;
-import akka.actor.typed.Behavior;
-import part1.actors.gui.RootActor;
+import part1.actors.cli.RootActor;
 import part1.threads.cli.DocumentsCounter;
 import part1.threads.gui.InputListener;
 import part1.threads.gui.TerminationFlag;
@@ -25,13 +24,13 @@ public class Controller implements InputListener {
         this.terminationFlag.reset();
 
         this.actorSystem = ActorSystem.create(
-                RootActor.create(
+                RootActor.createGUI(
                         new DocumentsCounter(),
-                        terminationFlag,
                         rootDirectory,
                         wordToFind,
+                        terminationFlag,
                         view),
-                "gardian");
+                "guardian");
 
         actorSystem.tell(RootActor.StartComputation.INSTANCE);
     }

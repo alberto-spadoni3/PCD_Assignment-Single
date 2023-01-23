@@ -1,7 +1,6 @@
 package part1.actors.cli;
 
 import akka.actor.typed.ActorSystem;
-import part1.actors.cli.RootActor;
 import part1.threads.cli.DocumentsCounter;
 
 import java.io.File;
@@ -18,7 +17,7 @@ public class Main {
 
         System.out.println("SOLUTION BASED ON THE ACTORS APPROACH");
 
-        ActorSystem<RootActor.Command> actorSystem = ActorSystem.create(RootActor.create(new DocumentsCounter(), rootDirectory, wordToFind), "gardian");
+        ActorSystem<RootActor.Command> actorSystem = ActorSystem.create(RootActor.create(new DocumentsCounter(), new File(rootDirectory), wordToFind), "guardian");
 
         actorSystem.tell(RootActor.StartComputation.INSTANCE);
     }

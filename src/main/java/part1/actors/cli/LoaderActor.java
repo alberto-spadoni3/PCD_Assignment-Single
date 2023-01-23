@@ -12,15 +12,18 @@ import org.apache.pdfbox.pdmodel.encryption.AccessPermission;
 import org.apache.pdfbox.text.PDFTextStripper;
 import part1.threads.cli.Document;
 import part1.threads.cli.DocumentsCounter;
+import part1.threads.gui.TerminationFlag;
+
 import java.io.File;
 import java.io.IOException;
-import java.util.Random;
 
 public class LoaderActor extends AbstractBehavior<RootActor.Command> {
     private final PDFTextStripper stripper;
     private final StringBuilder documentText;
     private final DocumentsCounter documentsCounter;
     private final ActorRef<RootActor.Command> parentActorRef;
+    private final TerminationFlag terminationFlag;
+    private final boolean GUIVersion;    // 0 = CLI - 1 = GUI
 
     public static final class LoadFile implements RootActor.Command {
         public final File fileName;
@@ -40,12 +43,28 @@ public class LoaderActor extends AbstractBehavior<RootActor.Command> {
         return Behaviors.setup(context -> new LoaderActor(context, documentsCounter, parentActorRef));
     }
 
+    public static Behavior<RootActor.Command> createGUI(DocumentsCounter documentsCounter, ActorRef<RootActor.Command> parentActorRef, TerminationFlag terminationFlag) {
+        return Behaviors.setup(context -> new LoaderActor(context, documentsCounter, parentActorRef, terminationFlag));
+    }
+
     private LoaderActor(ActorContext<RootActor.Command> context, DocumentsCounter documentsCounter, ActorRef<RootActor.Command> parentActorRef) throws IOException {
         super(context);
         this.documentsCounter = documentsCounter;
         this.parentActorRef = parentActorRef;
         this.stripper = new PDFTextStripper();
         this.documentText = new StringBuilder();
+        this.GUIVersion = false;
+        this.terminationFlag = null;
+    }
+
+    private LoaderActor(ActorContext<RootActor.Command> context, DocumentsCounter documentsCounter, ActorRef<RootActor.Command> parentActorRef, TerminationFlag terminationFlag) throws IOException {
+        super(context);
+        this.documentsCounter = documentsCounter;
+        this.parentActorRef = parentActorRef;
+        this.stripper = new PDFTextStripper();
+        this.documentText = new StringBuilder();
+        this.GUIVersion = true;
+        this.terminationFlag = terminationFlag;
     }
 
     @Override
@@ -63,19 +82,40 @@ public class LoaderActor extends AbstractBehavior<RootActor.Command> {
         try {
             PDDocument documentLoaded = PDDocument.load(command.fileName);
             AccessPermission permission = documentLoaded.getCurrentAccessPermission();
-            if (permission.canExtractContent()) {
-                for (int i = 1; i <= documentLoaded.getNumberOfPages(); i++) {
-                    stripper.setStartPage(i);
-                    stripper.setEndPage(i);
-                    documentText.append(stripper.getText(documentLoaded));
+            if (this.GUIVersion) {
+                if (this.terminationFlag.isNotStopped() && permission.canExtractContent()) {
+                    if (this.terminationFlag.isPaused())
+                        this.terminationFlag.waitToBeResumed();
+
+                    for (int i = 1; i <= documentLoaded.getNumberOfPages(); i++) {
+                        stripper.setStartPage(i);
+                        stripper.setEndPage(i);
+                        documentText.append(stripper.getText(documentLoaded));
+                    }
+                    Document doc = new Document(command.fileName.getName(), documentText.toString());
+                    getContext()
+                            .spawn(AnalyzerActor.createGUI(command.wordToFind,
+                                            documentsCounter,
+                                            getContext().getSelf(),
+                                            terminationFlag)
+                                    , "Analyzer-" + this.getID())
+                            .tell(new AnalyzerActor.AnalyzeDocument(doc));
                 }
-                Document doc = new Document(command.fileName.getName(), documentText.toString());
-                getContext()
-                        .spawn(AnalyzerActor.create(command.wordToFind,
-                                                    documentsCounter,
-                                                    getContext().getSelf())
-                               , "Analyzer-" + this.getID())
-                        .tell(new AnalyzerActor.AnalyzeDocument(doc));
+            } else {
+                if (permission.canExtractContent()) {
+                    for (int i = 1; i <= documentLoaded.getNumberOfPages(); i++) {
+                        stripper.setStartPage(i);
+                        stripper.setEndPage(i);
+                        documentText.append(stripper.getText(documentLoaded));
+                    }
+                    Document doc = new Document(command.fileName.getName(), documentText.toString());
+                    getContext()
+                            .spawn(AnalyzerActor.create(command.wordToFind,
+                                            documentsCounter,
+                                            getContext().getSelf())
+                                    , "Analyzer-" + this.getID())
+                            .tell(new AnalyzerActor.AnalyzeDocument(doc));
+                }
             }
             documentLoaded.close();
             documentText.delete(0, documentText.length());

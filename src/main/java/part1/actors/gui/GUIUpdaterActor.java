@@ -9,9 +9,9 @@ import akka.actor.typed.javadsl.Receive;
 import part1.threads.cli.DocumentsCounter;
 import part1.threads.gui.TerminationFlag;
 import part1.threads.gui.View;
+import part1.actors.cli.RootActor;
 
 import java.util.List;
-import java.util.function.ToDoubleBiFunction;
 
 public class GUIUpdaterActor extends AbstractBehavior<RootActor.Command> {
     public enum UpdateGUI implements RootActor.Command {
