@@ -1,7 +1,8 @@
 apply plugin: 'java'
 
 def versions = [
-        ScalaBinary: "2.13"
+        ScalaBinary: "2.13",
+        AkkaVersion: "2.7.0"
 ]
 
 task threadsCLI(type: JavaExec) {
@@ -64,6 +65,12 @@ task actorsGUI(type: JavaExec) {
     main = 'part1.actors.gui.Main'
 }
 
+task actorsSD(type: JavaExec) {
+    classpath = sourceSets.main.runtimeClasspath
+
+    main = 'part2.actors.Main'
+}
+
 
 repositories {
     mavenCentral()
@@ -74,7 +81,21 @@ dependencies {
     implementation 'org.apache.commons:commons-lang3:3.0'
     implementation 'io.reactivex.rxjava3:rxjava:3.1.2'
     implementation 'io.vertx:vertx-core:4.2.1'
-    implementation platform("com.typesafe.akka:akka-bom_${versions.ScalaBinary}:2.6.17")
+
+    implementation platform("com.typesafe.akka:akka-bom_${versions.ScalaBinary}:${versions.AkkaVersion}")
+    implementation "com.typesafe.akka:akka-cluster-typed_${versions.ScalaBinary}"
+    implementation "com.typesafe.akka:akka-serialization-jackson_${versions.ScalaBinary}"
     implementation "com.typesafe.akka:akka-actor-typed_${versions.ScalaBinary}"
+    implementation("com.typesafe.akka:akka-cluster_${versions.ScalaBinary}:${versions.AkkaVersion}")
+    implementation("com.typesafe.akka:akka-stream_${versions.ScalaBinary}:${versions.AkkaVersion}")
+    implementation("com.typesafe.akka:akka-serialization-jackson_${versions.ScalaBinary}:${versions.AkkaVersion}")
+    implementation("com.typesafe.akka:akka-distributed-data_${versions.ScalaBinary}:${versions.AkkaVersion}")
+
+    testImplementation "com.typesafe.akka:akka-actor-testkit-typed_${versions.ScalaBinary}"
+
     implementation 'ch.qos.logback:logback-classic:1.2.6'
+
+    implementation("org.slf4j:slf4j-api:1.7.5")
+    //implementation("org.slf4j:slf4j-log4j12:1.7.5")
+
 }
