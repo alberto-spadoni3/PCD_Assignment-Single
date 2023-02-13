@@ -32,7 +32,7 @@ public class PuzzleBoard extends JFrame {
     private final int rows, columns;
     private final String imagePath;
     private List<Tile> tiles = new ArrayList<>();
-    private final SelectionManager selectionManager = new SelectionManager();
+    private SelectionManager selectionManager = new SelectionManager();
     private final JPanel board;
     private BufferedImage image;
 
@@ -132,12 +132,13 @@ public class PuzzleBoard extends JFrame {
         return byteImg;
     }
 
-    public List<Tile> getListOfTiles() {
+    public List<Tile> getTiles() {
         return tiles;
     }
 
-    public void setListOfTiles(final List<Tile> updatedTiles) {
+    public void setTiles(final List<Tile> updatedTiles) {
         tiles = updatedTiles;
+        selectionManager = new SelectionManager();
     }
 
     public JPanel getPanel() {

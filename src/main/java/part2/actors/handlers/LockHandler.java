@@ -162,7 +162,7 @@ public class LockHandler {
                     .tell(MessageFactory.createInitBoardReq(myPeer.getClock()), ClusterSingleton.getInstance().getSelf()));
             case UPDATE -> myPeer.getInitializedPeers().forEach(node -> ClusterSingleton.getInstance()
                     .getActorFromAddress(node)
-                    .tell(MessageFactory.createUpdateBoardReq(myPeer.getClock(), myPeer.getPuzzleBoard().getListOfTiles()),
+                    .tell(MessageFactory.createUpdateBoardReq(myPeer.getClock(), myPeer.getPuzzleBoard().getTiles()),
                             ClusterSingleton.getInstance().getSelf()));
         }
     }

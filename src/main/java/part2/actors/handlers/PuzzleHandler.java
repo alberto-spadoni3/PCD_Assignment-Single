@@ -76,7 +76,7 @@ public class PuzzleHandler {
             case INIT_BOARD_REQ -> {
                 myPeer.initializePeer(address);
                 ClusterSingleton.getInstance().getActorFromAddress(address)
-                        .tell(MessageFactory.createInitBoardAck(myPeer.getClock(), myPeer.getPuzzleBoard().getListOfTiles()),
+                        .tell(MessageFactory.createInitBoardAck(myPeer.getClock(), myPeer.getPuzzleBoard().getTiles()),
                                 ClusterSingleton.getInstance().getSelf());
             }
             case UPDATE_BOARD_ACK -> myLockHandler.operationAckReceived(address);

@@ -21,7 +21,7 @@ public class Puzzle {
     }
 
     public void updatePuzzle(List<Tile> tiles) {
-        board.setListOfTiles(tiles);
+        board.setTiles(tiles);
         board.paintPuzzle(board.getPanel());
     }
 
