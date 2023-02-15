@@ -61,7 +61,7 @@ public class PuzzleCluster extends AbstractActor {
 
                 // GESTIONE MESSAGGIO CHE CONTIENE IL PUZZLE
                 .match(BoardStatefulMessage.class, boardStatefulMessage -> myPuzzleHandler
-                        .boardStatefullMessageHandler(getSenderAddress(), boardStatefulMessage))
+                        .boardStatefulMessageHandler(getSenderAddress(), boardStatefulMessage))
 
                 // GESTIONE MESSAGGIO CHE NON CONTIENE IL PUZZLE
                 .match(BoardStatelessMessages.class, boardStatelessMessages -> myPuzzleHandler

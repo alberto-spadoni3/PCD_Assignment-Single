@@ -15,7 +15,6 @@ public class Puzzle {
         //CHANGE ENUM VALUE TO CHANGE IMAGE AND PUZZLE'S DIMENSION
         board = new PuzzleBoard(actorRef, "Puzzle of " + actorRef.toString(), StringEnum.IMAGE1);
         board.setVisible(true);
-        board.loadImage();
         board.createTiles();
         board.paintPuzzle(board.getPanel());
     }

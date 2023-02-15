@@ -56,6 +56,13 @@ public class PuzzleBoard extends JFrame {
     }
 
     public void createTiles() {
+
+        try {
+            image = ImageIO.read(new File(imagePath));
+        } catch (IOException ex) {
+            JOptionPane.showMessageDialog(this, "Could not load image", "Error", JOptionPane.ERROR_MESSAGE);
+        }
+
         final int imageWidth = image.getWidth(null);
         final int imageHeight = image.getHeight(null);
 
@@ -108,15 +115,7 @@ public class PuzzleBoard extends JFrame {
         }
     }
 
-    public void loadImage() {
-        try {
-            image = ImageIO.read(new File(imagePath));
-        } catch (IOException ex) {
-            JOptionPane.showMessageDialog(this, "Could not load image", "Error", JOptionPane.ERROR_MESSAGE);
-        }
-    }
-
-    // for serialization
+    // serialize image
     private byte[] createSerializableImage(final BufferedImage bufferedImage) {
         ByteArrayOutputStream bos = new ByteArrayOutputStream();
         byte[] byteImg = null;

@@ -5,36 +5,33 @@ import part2.actors.messages.*;
 import part2.actors.utility.MyLamportClock;
 import part2.actors.Peer;
 import part2.actors.ClusterSingleton;
-import part2.actors.utility.CSopEnum;
+import part2.actors.utility.OperationEnum;
 
 import java.util.HashSet;
 import java.util.Set;
+
+import static part2.actors.utility.MyLamportClock.ClockCompareResult.LESS;
 
 
 public class LockHandler {
 
     private final Peer myPeer;
     private final Set<Address> requestQueue;
-    private final Set<Address> lockAckQueue;
-    private final Set<Address> opAckQueue;
-    //private int operationCounter;
-    //private int ackCounter;
+    private final Set<Address> grantQueue;
+    private final Set<Address> ackQueue;
     private boolean wantLock;
     private boolean hasLock;
     private MyLamportClock myRequestClock;
-    private CSopEnum myCSoperation;
+    private OperationEnum operationToExecute;
 
     public LockHandler(Peer peer) {
         myPeer = peer;
         requestQueue = new HashSet<>();
-        lockAckQueue = new HashSet<>();
-        opAckQueue = new HashSet<>();
+        grantQueue = new HashSet<>();
+        ackQueue = new HashSet<>();
         wantLock = false;
         hasLock = false;
-        myCSoperation = CSopEnum.DEFAULT;
-
-        //operationCounter = 0;
-        //ackCounter = 0;
+        operationToExecute = OperationEnum.IDLE;
     }
 
     public void getLocksAndInitialize() {
@@ -43,14 +40,14 @@ public class LockHandler {
 
             myPeer.initialize();
         } else {
-            myCSoperation = CSopEnum.INIT;
+            operationToExecute = OperationEnum.INIT;
             manageLockAcquisition();
         }
     }
 
     public void getLocksAndUpdate() {
         if (!myPeer.isAlone()) {
-            myCSoperation = CSopEnum.UPDATE;
+            operationToExecute = OperationEnum.UPDATE;
             manageLockAcquisition();
         }
     }
@@ -61,9 +58,75 @@ public class LockHandler {
         wantLock = true;
         myPeer.incrementClock();
         myRequestClock = myPeer.getClock();
-        myPeer.getAllPeers().forEach(node -> ClusterSingleton.getInstance()
-                .getActorFromAddress(node)
-                .tell(MessageFactory.createAskMessage(myRequestClock), ClusterSingleton.getInstance().getSelf()));
+        myPeer.getAllPeers().forEach(this::askLockTo);
+    }
+
+    public void peerJoining(Address address) {
+        if(needLock()) {
+            myPeer.log("si è unito " + address.toString() + ". Invio richiesta lock");
+
+            askLockTo(address);
+        }
+    }
+
+    private void askLockTo(Address address) {
+        ClusterSingleton.getInstance().getActorFromAddress(address)
+                .tell(MessageFactory.createAskMessage(myRequestClock), ClusterSingleton.getInstance().getSelf());
+    }
+
+    private void grantLockTo(Address address) {
+        ClusterSingleton.getInstance().getActorFromAddress(address)
+                .tell(MessageFactory.createGrantMessage(myPeer.getClock()), ClusterSingleton.getInstance().getSelf());
+    }
+
+    public void lockRequestReceived(Address address, MyLamportClock msgClock) {
+        manageClock(msgClock);
+        if(hasLock || (wantLock && myRequestClock.compareToClock(msgClock).equals(LESS))) {
+            myPeer.log("ricevuta richiesta del lock da " + address.toString() + ". METTO IN CODA LA RICHIESTA");
+
+            requestQueue.add(address);
+        } else {
+            myPeer.log("ricevuta richiesta del lock da " + address.toString() + ". INVIO ACK");
+
+            grantLockTo(address);
+        }
+    }
+
+    public void lockGrantReceived(Address address, MyLamportClock msgClock) {
+        manageClock(msgClock);
+        if(needLock()) {
+            myPeer.log("ACK ricevuto da " + address.toString());
+
+            grantQueue.add(address);
+            if(allAckReceived(grantQueue, myPeer.getAllPeers())) {
+                executeCriticalSection();
+            }
+        }
+    }
+
+    private void executeCriticalSection() {
+        myPeer.log("ricevuti tutti gli ACK. Entro in sezione critica");
+
+        myPeer.incrementClock();
+        grantQueue.clear();
+        hasLock = true;
+        switch (operationToExecute) {
+            case INIT -> myPeer.getInitializedPeers().forEach(node -> ClusterSingleton.getInstance()
+                    .getActorFromAddress(node)
+                    .tell(MessageFactory.createInitBoardReq(myPeer.getClock()),
+                            ClusterSingleton.getInstance().getSelf()));
+            case UPDATE -> myPeer.getInitializedPeers().forEach(node -> ClusterSingleton.getInstance()
+                    .getActorFromAddress(node)
+                    .tell(MessageFactory.createUpdateBoardReq(myPeer.getClock(), myPeer.getPuzzleTiles()),
+                            ClusterSingleton.getInstance().getSelf()));
+        }
+    }
+
+    public void ackReceived(Address address) {
+        if(hasLock) {
+            ackQueue.add(address);
+            checkAckQueue(false);
+        }
     }
 
     private void releaseLock() {
@@ -72,22 +135,10 @@ public class LockHandler {
         myPeer.incrementClock();
         hasLock = false;
         wantLock = false;
-        requestQueue.forEach(node -> ClusterSingleton.getInstance()
-                .getActorFromAddress(node)
-                .tell(MessageFactory.createGrantMessage(this.myPeer.getClock()), ClusterSingleton.getInstance().getSelf()));
+        requestQueue.forEach(this::grantLockTo);
         requestQueue.clear();
-        lockAckQueue.clear();
-        //ackCounter = 0;
-        myCSoperation = CSopEnum.DEFAULT;
-    }
-
-    public void peerJoining(Address address) {
-        if(needLock()) {
-            myPeer.log("si è unito " + address.toString() + ". Invio richiesta lock");
-
-            ClusterSingleton.getInstance().getActorFromAddress(address)
-                    .tell(MessageFactory.createAskMessage(myRequestClock), ClusterSingleton.getInstance().getSelf());
-        }
+        grantQueue.clear();
+        operationToExecute = OperationEnum.IDLE;
     }
 
     public void peerLeaving(Address address) {
@@ -95,88 +146,36 @@ public class LockHandler {
         myPeer.removePeer(address);
 
         if(needLock()) {
-            lockAckQueue.remove(address);
-            //ackCounter -= - 1;
-            if(myPeer.requireInit()) {
-                if(myCSoperation == CSopEnum.INIT) {
+            grantQueue.remove(address);
+            if(myPeer.getInitializedPeers().isEmpty()) {
+                if(operationToExecute == OperationEnum.INIT) {
                     myPeer.initialize();
                 }
                 releaseLock();
-            } else if (lockAckQueue.size() /*ackCounter*/ == myPeer.getAllPeers().size()) {
+            } else if (allAckReceived(grantQueue, myPeer.getAllPeers())) {
                 executeCriticalSection();
             }
         }
         if(hasLock) {
-            opAckQueue.remove(address);
-            //operationCounter -= 1;
-            if(myPeer.getAllPeers().isEmpty() || opAckQueue.size() /*operationCounter*/ == myPeer.getInitializedPeers().size()) {
-                opAckQueue.clear();
-                //operationCounter = 0;
-                releaseLock();
-            }
+            ackQueue.remove(address);
+            checkAckQueue(myPeer.getAllPeers().isEmpty());
         }
     }
 
-    public void lockRequestReceived(Address address, LockMessages message) {
-        manageClock(message.getClock());
-        if(hasLock || (wantLock && myRequestClock.compareClocks(message.getClock()) == MyLamportClock.ClockCompareResult.LESS)) {
-            myPeer.log("ricevuta richiesta del lock da " + address.toString() + ". Metto in coda la richiesta");
-
-            requestQueue.add(address);
-        } else {
-            myPeer.log("ricevuta richiesta del lock da " + address.toString() + ". Invio ACK");
-
-            ClusterSingleton.getInstance().getActorFromAddress(address)
-                    .tell(MessageFactory.createGrantMessage(myPeer.getClock()), ClusterSingleton.getInstance().getSelf());
+    private void checkAckQueue(boolean peerLeavingCondition) {
+        if(allAckReceived(ackQueue, myPeer.getInitializedPeers()) || peerLeavingCondition) {
+            ackQueue.clear();
+            releaseLock();
         }
     }
 
-    public void lockAckReceived(Address address, LockMessages message) {
-        manageClock(message.getClock());
-        if(needLock()) {
-            myPeer.log("ACK ricevuto da " + address.toString());
-
-            lockAckQueue.add(address);
-            //ackCounter += 1;
-            if(lockAckQueue.size() /*ackCounter*/ == myPeer.getAllPeers().size()) {
-                executeCriticalSection();
-            }
-        }
+    private boolean allAckReceived(Set<Address> s1, Set<Address> s2) {
+        return s1.size() == s2.size();
     }
 
     private void manageClock(MyLamportClock clock) {
         myPeer.updateClock(clock);
         myPeer.incrementClock();
-    }
-
-    private void executeCriticalSection() {
-        myPeer.log("ricevuti tutti gli ACK. Entro in sezione critica");
-
-        myPeer.incrementClock();
-        lockAckQueue.clear();
-        //ackCounter = 0;
-        hasLock = true;
-        switch (myCSoperation) {
-            case INIT -> myPeer.getInitializedPeers().forEach(node -> ClusterSingleton.getInstance()
-                    .getActorFromAddress(node)
-                    .tell(MessageFactory.createInitBoardReq(myPeer.getClock()), ClusterSingleton.getInstance().getSelf()));
-            case UPDATE -> myPeer.getInitializedPeers().forEach(node -> ClusterSingleton.getInstance()
-                    .getActorFromAddress(node)
-                    .tell(MessageFactory.createUpdateBoardReq(myPeer.getClock(), myPeer.getPuzzleBoard().getTiles()),
-                            ClusterSingleton.getInstance().getSelf()));
-        }
-    }
-
-    public void operationAckReceived(Address address) {
-        if(hasLock) {
-            opAckQueue.add(address);
-            //operationCounter += 1;
-            if(opAckQueue.size()/*operationCounter*/ == myPeer.getInitializedPeers().size()) {
-                opAckQueue.clear();
-                //operationCounter = 0;
-                releaseLock();
-            }
-        }
     }
 
     private boolean needLock(){

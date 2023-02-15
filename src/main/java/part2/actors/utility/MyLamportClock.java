@@ -20,7 +20,7 @@ public class MyLamportClock implements Serializable {
         value = value + 1;
     }
 
-    public ClockCompareResult compareClocks(final MyLamportClock clock) {
+    public ClockCompareResult compareToClock(final MyLamportClock clock) {
         if (value > clock.getValue()) {
             return ClockCompareResult.GREATER;
         } else if (value < clock.getValue()) {

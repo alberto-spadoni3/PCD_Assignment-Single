@@ -46,12 +46,12 @@ public class PuzzleHandler {
 
     public void lockMessageHandler(Address address, LockMessages msg) {
         switch (msg.getType()) {
-            case ASK -> myLockHandler.lockRequestReceived(address, msg);
-            case GRANT -> myLockHandler.lockAckReceived(address, msg);
+            case ASK -> myLockHandler.lockRequestReceived(address, msg.getClock());
+            case GRANT -> myLockHandler.lockGrantReceived(address, msg.getClock());
         }
     }
 
-    public void boardStatefullMessageHandler(Address address, BoardStatefulMessage message) {
+    public void boardStatefulMessageHandler(Address address, BoardStatefulMessage message) {
         manageClock(message.getClock());
         switch (message.getType()) {
             case INIT_BOARD_ACK -> {
@@ -59,7 +59,7 @@ public class PuzzleHandler {
                     myPeer.initialize();
                     myPeer.updatePuzzle(message.getTiles());
                 }
-                myLockHandler.operationAckReceived(address);
+                myLockHandler.ackReceived(address);
             }
             case UPDATE_BOARD_REQ -> {
                 myPeer.updatePuzzle(message.getTiles());
@@ -76,10 +76,10 @@ public class PuzzleHandler {
             case INIT_BOARD_REQ -> {
                 myPeer.initializePeer(address);
                 ClusterSingleton.getInstance().getActorFromAddress(address)
-                        .tell(MessageFactory.createInitBoardAck(myPeer.getClock(), myPeer.getPuzzleBoard().getTiles()),
+                        .tell(MessageFactory.createInitBoardAck(myPeer.getClock(), myPeer.getPuzzleTiles()),
                                 ClusterSingleton.getInstance().getSelf());
             }
-            case UPDATE_BOARD_ACK -> myLockHandler.operationAckReceived(address);
+            case UPDATE_BOARD_ACK -> myLockHandler.ackReceived(address);
         }
     }
 

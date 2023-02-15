@@ -9,6 +9,10 @@ import part2.actors.utility.MyLamportClock;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
+
+import static part2.actors.utility.MyLamportClock.ClockCompareResult.LESS;
 
 public class Peer {
     private final Set<Address> initializedPeer;
@@ -63,10 +67,6 @@ public class Peer {
         return initializedPeer.isEmpty() && uninitializedPeer.isEmpty();
     }
 
-    public boolean requireInit() {
-        return initializedPeer.isEmpty();
-    }
-
     public void initialize() {
         initialized = true;
         myPuzzle.initPuzzle(ClusterSingleton.getInstance().getSelf());
@@ -81,9 +81,10 @@ public class Peer {
         initializedPeer.add(address);
     }
 
-    public PuzzleBoard getPuzzleBoard() {
-        return myPuzzle.getBoard();
+    public List<Tile> getPuzzleTiles() {
+        return myPuzzle.getBoard().getTiles();
     }
+
     public void updatePuzzle(List<Tile> tiles) {
         myPuzzle.updatePuzzle(tiles);
     }
@@ -101,7 +102,7 @@ public class Peer {
     }
 
     public void updateClock(MyLamportClock newClock) {
-        if(myLamportClock.compareClocks(newClock) == MyLamportClock.ClockCompareResult.LESS) {
+        if(myLamportClock.compareToClock(newClock).equals(LESS)) {
             myLamportClock = newClock;
         }
     }

@@ -1,8 +1,8 @@
 package part2.actors.utility;
 
-public enum CSopEnum {
+public enum OperationEnum {
 
-    DEFAULT,
+    IDLE,
     INIT,
     UPDATE
 }
