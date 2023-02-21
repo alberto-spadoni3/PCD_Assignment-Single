@@ -65,6 +65,12 @@ task actorsGUI(type: JavaExec) {
     main = 'part1.actors.gui.Main'
 }
 
+task actorsRMI(type: JavaExec) {
+    classpath = sourceSets.main.runtimeClasspath
+
+    main = 'part2.RMI.Main'
+}
+
 task actorsSD(type: JavaExec) {
     classpath = sourceSets.main.runtimeClasspath
 
