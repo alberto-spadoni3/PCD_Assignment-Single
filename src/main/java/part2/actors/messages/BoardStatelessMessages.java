@@ -16,6 +16,6 @@ public class BoardStatelessMessages extends AbstractGeneralMessage{
 
     public enum BoardStatelessMessageType {
         INIT_BOARD_REQ,
-        UPDATE_BOARD_ACK
+        BOARD_UPDATED
     }
 }

@@ -25,13 +25,13 @@ public class MessageFactory {
                 BoardStatefulMessage.BoardStatefulMessageType.INIT_BOARD_ACK);
     }
 
-    public static BoardStatefulMessage createUpdateBoardReq(MyLamportClock clock, List<Tile> tiles) {
+    public static BoardStatefulMessage createUpdateBoard(MyLamportClock clock, List<Tile> tiles) {
         return new BoardStatefulMessage(clock, tiles,
-                BoardStatefulMessage.BoardStatefulMessageType.UPDATE_BOARD_REQ);
+                BoardStatefulMessage.BoardStatefulMessageType.UPDATE_BOARD);
     }
 
-    public static BoardStatelessMessages createUpdateBoardAck(MyLamportClock clock) {
-        return new BoardStatelessMessages(clock, BoardStatelessMessages.BoardStatelessMessageType.UPDATE_BOARD_ACK);
+    public static BoardStatelessMessages createBoardUpdated(MyLamportClock clock) {
+        return new BoardStatelessMessages(clock, BoardStatelessMessages.BoardStatelessMessageType.BOARD_UPDATED);
     }
 
     public static SwapTilesMessage createSwapTilesMessage() {

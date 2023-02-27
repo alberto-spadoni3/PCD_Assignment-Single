@@ -19,6 +19,6 @@ public class BoardStatefulMessage extends AbstractPuzzleMessage{
 
     public enum BoardStatefulMessageType {
         INIT_BOARD_ACK,
-        UPDATE_BOARD_REQ
+        UPDATE_BOARD
     }
 }

@@ -61,11 +61,11 @@ public class PuzzleHandler {
                 }
                 myLockHandler.ackReceived(address);
             }
-            case UPDATE_BOARD_REQ -> {
+            case UPDATE_BOARD -> {
                 myPeer.updatePuzzle(message.getTiles());
                 ClusterSingleton.getInstance()
                         .getActorFromAddress(address)
-                        .tell(MessageFactory.createUpdateBoardAck(myPeer.getClock()), ClusterSingleton.getInstance().getSelf());
+                        .tell(MessageFactory.createBoardUpdated(myPeer.getClock()), ClusterSingleton.getInstance().getSelf());
             }
         }
     }
@@ -79,7 +79,7 @@ public class PuzzleHandler {
                         .tell(MessageFactory.createInitBoardAck(myPeer.getClock(), myPeer.getPuzzleTiles()),
                                 ClusterSingleton.getInstance().getSelf());
             }
-            case UPDATE_BOARD_ACK -> myLockHandler.ackReceived(address);
+            case BOARD_UPDATED -> myLockHandler.ackReceived(address);
         }
     }
 
