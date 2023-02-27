@@ -23,29 +23,29 @@ public class PuzzleRemoteImpl implements PuzzleRemote, Serializable {
     }
 
     @Override
-    public List<Tile> getTiles() {
+    public synchronized List<Tile> getTiles() {
         return tiles;
     }
 
     @Override
-    public void setTiles(List<Tile> tiles) {
+    public synchronized void setTiles(List<Tile> tiles) {
         this.tiles = tiles;
         runListeners(ListenerAction.UPDATE_PUZZLE);
     }
 
     @Override
-    public void setMainListener(PuzzleListener listener) throws RemoteException {
+    public synchronized void setMainListener(PuzzleListener listener) throws RemoteException {
         mainListener = listener;
     }
 
     @Override
-    public void addListener(PuzzleListener listener) throws RemoteException {
+    public synchronized void addListener(PuzzleListener listener) throws RemoteException {
         listeners.add(listener);
         runListeners(ListenerAction.UPDATE_LISTENERS);
     }
 
     @Override
-    public void addListeners(Set<PuzzleListener> listeners) throws RemoteException {
+    public synchronized void addListeners(Set<PuzzleListener> listeners) throws RemoteException {
         this.listeners.clear();
         this.listeners.addAll(listeners);
         runListeners(ListenerAction.UPDATE_LISTENERS);
