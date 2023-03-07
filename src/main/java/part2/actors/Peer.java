@@ -1,16 +1,12 @@
 package part2.actors;
 
 import akka.actor.Address;
-import part2.actors.puzzleboard.PuzzleBoard;
-import part2.actors.puzzleboard.Tile;
 import part2.actors.puzzleboard.Puzzle;
+import part2.actors.puzzleboard.Tile;
 import part2.actors.utility.MyLamportClock;
-
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
-import java.util.stream.Collectors;
-import java.util.stream.Stream;
 
 import static part2.actors.utility.MyLamportClock.ClockCompareResult.LESS;
 
@@ -21,6 +17,7 @@ public class Peer {
     private MyLamportClock myLamportClock;
     private final Puzzle myPuzzle;
     private boolean initialized;
+
     public Peer() {
         initializedPeer = new HashSet<>();
         uninitializedPeer = new HashSet<>();
@@ -33,15 +30,15 @@ public class Peer {
     }
 
     public void log(String msg) {
-        System.out.println(myAddress.toString() + ":: " + msg);
+        System.out.println(myAddress.toString() + " :: " + msg);
     }
 
-    public boolean isMyInitialization (Address address) {
-        return myAddress.equals(address);
+    public boolean isMyInitialization(Address actorAddress) {
+        return myAddress.equals(actorAddress);
     }
 
     public void addPeer(Address peer) {
-        if(initialized) {
+        if (initialized) {
             uninitializedPeer.add(peer);
         } else {
             initializedPeer.add(peer);
@@ -76,9 +73,9 @@ public class Peer {
         return initialized;
     }
 
-    public void initializePeer(Address address) {
-        uninitializedPeer.remove(address);
-        initializedPeer.add(address);
+    public void initializePeer(Address actorAddress) {
+        uninitializedPeer.remove(actorAddress);
+        initializedPeer.add(actorAddress);
     }
 
     public List<Tile> getPuzzleTiles() {
@@ -102,7 +99,7 @@ public class Peer {
     }
 
     public void updateClock(MyLamportClock newClock) {
-        if(myLamportClock.compareToClock(newClock).equals(LESS)) {
+        if (myLamportClock.compareToClock(newClock).equals(LESS)) {
             myLamportClock = newClock;
         }
     }

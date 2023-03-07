@@ -18,7 +18,7 @@ public class PuzzleCluster extends AbstractActor {
     private final Cluster cluster = Cluster.get(getContext().getSystem());
     private PuzzleHandler myPuzzleHandler;
 
-    //Effettuato al primo avvio dell'Attore e quando crasha e quindi deve essere riavviato
+    // Effettuato al primo avvio dell'Attore e quando crasha e quindi deve essere riavviato
     @Override
     public void preStart() {
         ClusterSingleton.initialize(cluster, getSelf(), getContext());
