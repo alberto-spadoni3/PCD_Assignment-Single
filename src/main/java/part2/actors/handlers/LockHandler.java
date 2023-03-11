@@ -158,6 +158,9 @@ public class LockHandler {
         }
         if(hasLock) {
             ackQueue.remove(address);
+            if(myPeer.getInitializedPeers().isEmpty() && !myPeer.isInitialized()) {
+                myPeer.initialize();
+            }
             checkAckQueue(myPeer.getAllPeers().isEmpty());
         }
     }
