@@ -12,9 +12,7 @@ import java.util.Set;
 
 import static part2.actors.utility.MyLamportClock.ClockCompareResult.LESS;
 
-
 public class LockHandler {
-
     private final Peer myPeer;
     private final Set<Address> requestQueue;
     private final Set<Address> grantQueue;
@@ -35,7 +33,7 @@ public class LockHandler {
     }
 
     public void getLocksAndInitialize() {
-        if(myPeer.isAlone()) {
+        if (myPeer.isAlone()) {
             myPeer.log("inizializzo il puzzle");
 
             myPeer.initialize();
@@ -52,7 +50,7 @@ public class LockHandler {
         }
     }
 
-    private void manageLockAcquisition () {
+    private void manageLockAcquisition() {
         myPeer.log("devo aggiornare il puzzle. Invio richiesta lock");
 
         wantLock = true;
@@ -62,7 +60,7 @@ public class LockHandler {
     }
 
     public void peerJoining(Address address) {
-        if(needLock()) {
+        if (needLock()) {
             myPeer.log("si è unito " + address.toString() + ". Invio richiesta lock");
 
             askLockTo(address);
@@ -81,7 +79,7 @@ public class LockHandler {
 
     public void lockRequestReceived(Address address, MyLamportClock msgClock) {
         manageClock(msgClock);
-        if(hasLock || (wantLock && myRequestClock.compareToClock(msgClock).equals(LESS))) {
+        if (hasLock || (wantLock && myRequestClock.compareToClock(msgClock).equals(LESS))) {
             myPeer.log("ricevuta richiesta del lock da " + address.toString() + ". METTO IN CODA LA RICHIESTA");
 
             requestQueue.add(address);
@@ -92,13 +90,13 @@ public class LockHandler {
         }
     }
 
-    public void lockGrantReceived(Address address, MyLamportClock msgClock) {
+    public void lockGrantReceived(Address actorAddress, MyLamportClock msgClock) {
         manageClock(msgClock);
-        if(needLock()) {
-            myPeer.log("ACK ricevuto da " + address.toString());
+        if (needLock()) {
+            myPeer.log("ACK ricevuto da " + actorAddress.toString());
 
-            grantQueue.add(address);
-            if(allAckReceived(grantQueue, myPeer.getAllPeers())) {
+            grantQueue.add(actorAddress);
+            if (allAckReceived(grantQueue, myPeer.getAllPeers())) {
                 executeCriticalSection();
             }
         }
@@ -122,9 +120,9 @@ public class LockHandler {
         }
     }
 
-    public void ackReceived(Address address) {
-        if(hasLock) {
-            ackQueue.add(address);
+    public void ackReceived(Address actorAddress) {
+        if (hasLock) {
+            ackQueue.add(actorAddress);
             checkAckQueue(false);
         }
     }
@@ -141,14 +139,14 @@ public class LockHandler {
         operationToExecute = OperationEnum.IDLE;
     }
 
-    public void peerLeaving(Address address) {
-        requestQueue.remove(address);
-        myPeer.removePeer(address);
+    public void peerLeaving(Address actorAddress) {
+        requestQueue.remove(actorAddress);
+        myPeer.removePeer(actorAddress);
 
-        if(needLock()) {
-            grantQueue.remove(address);
-            if(myPeer.getInitializedPeers().isEmpty()) {
-                if(operationToExecute == OperationEnum.INIT) {
+        if (needLock()) {
+            grantQueue.remove(actorAddress);
+            if (myPeer.getInitializedPeers().isEmpty()) {
+                if (operationToExecute == OperationEnum.INIT) {
                     myPeer.initialize();
                 }
                 releaseLock();
@@ -156,8 +154,8 @@ public class LockHandler {
                 executeCriticalSection();
             }
         }
-        if(hasLock) {
-            ackQueue.remove(address);
+        if (hasLock) {
+            ackQueue.remove(actorAddress);
             if(myPeer.getInitializedPeers().isEmpty() && !myPeer.isInitialized()) {
                 myPeer.initialize();
             }
@@ -166,7 +164,7 @@ public class LockHandler {
     }
 
     private void checkAckQueue(boolean peerLeavingCondition) {
-        if(allAckReceived(ackQueue, myPeer.getInitializedPeers()) || peerLeavingCondition) {
+        if (allAckReceived(ackQueue, myPeer.getInitializedPeers()) || peerLeavingCondition) {
             ackQueue.clear();
             releaseLock();
         }
@@ -181,7 +179,7 @@ public class LockHandler {
         myPeer.incrementClock();
     }
 
-    private boolean needLock(){
+    private boolean needLock() {
         return wantLock && !hasLock;
     }
 }
