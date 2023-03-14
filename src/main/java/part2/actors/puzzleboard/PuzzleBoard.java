@@ -110,8 +110,15 @@ public class PuzzleBoard extends JFrame {
             actorRef.tell(MessageFactory.createSwapTilesMessage(), actorRef);
 
             ClusterSingleton.getInstance().downActor(ClusterSingleton.getInstance().getMyAddress());
-            JOptionPane.showMessageDialog(this, "Puzzle Completed!", "", JOptionPane.INFORMATION_MESSAGE);
-            System.exit(0);
+            int res = JOptionPane.showOptionDialog(
+                    null,
+                    "The puzzle has been completed!",
+                    "Game is finished",
+                    JOptionPane.DEFAULT_OPTION,
+                    JOptionPane.INFORMATION_MESSAGE, null, null, null);
+
+            if (res == 0)
+                System.exit(0);
         }
     }
 
