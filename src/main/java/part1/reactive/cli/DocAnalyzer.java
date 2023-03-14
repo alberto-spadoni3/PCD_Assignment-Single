@@ -44,12 +44,10 @@ public class DocAnalyzer extends ActiveComponent {
                         return Observable.empty();
                     });
         } else {
+            //log("Start analyzing");
             return source
                     .observeOn(Schedulers.computation())
-                    .flatMap(documentToAnalyze -> {
-                        //log("Start analyzing");
-                        return buildResult(documentToAnalyze);
-                    });
+                    .flatMap(this::buildResult);
         }
     }
 

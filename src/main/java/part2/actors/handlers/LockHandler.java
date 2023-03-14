@@ -59,34 +59,34 @@ public class LockHandler {
         myPeer.getAllPeers().forEach(this::askLockTo);
     }
 
-    public void peerJoining(Address address) {
+    public void peerJoining(Address actorAddress) {
         if (needLock()) {
-            myPeer.log("si è unito " + address.toString() + ". Invio richiesta lock");
+            myPeer.log("si è unito " + actorAddress.toString() + ". Invio richiesta lock");
 
-            askLockTo(address);
+            askLockTo(actorAddress);
         }
     }
 
-    private void askLockTo(Address address) {
-        ClusterSingleton.getInstance().getActorFromAddress(address)
+    private void askLockTo(Address actorAddress) {
+        ClusterSingleton.getInstance().getActorFromAddress(actorAddress)
                 .tell(MessageFactory.createAskMessage(myRequestClock), ClusterSingleton.getInstance().getSelf());
     }
 
-    private void grantLockTo(Address address) {
-        ClusterSingleton.getInstance().getActorFromAddress(address)
+    private void grantLockTo(Address actorAddress) {
+        ClusterSingleton.getInstance().getActorFromAddress(actorAddress)
                 .tell(MessageFactory.createGrantMessage(myPeer.getClock()), ClusterSingleton.getInstance().getSelf());
     }
 
-    public void lockRequestReceived(Address address, MyLamportClock msgClock) {
+    public void lockRequestReceived(Address actorAddress, MyLamportClock msgClock) {
         manageClock(msgClock);
         if (hasLock || (wantLock && myRequestClock.compareToClock(msgClock).equals(LESS))) {
-            myPeer.log("ricevuta richiesta del lock da " + address.toString() + ". METTO IN CODA LA RICHIESTA");
+            myPeer.log("ricevuta richiesta del lock da " + actorAddress.toString() + ". METTO IN CODA LA RICHIESTA");
 
-            requestQueue.add(address);
+            requestQueue.add(actorAddress);
         } else {
-            myPeer.log("ricevuta richiesta del lock da " + address.toString() + ". INVIO ACK");
+            myPeer.log("ricevuta richiesta del lock da " + actorAddress.toString() + ". INVIO ACK");
 
-            grantLockTo(address);
+            grantLockTo(actorAddress);
         }
     }
 
