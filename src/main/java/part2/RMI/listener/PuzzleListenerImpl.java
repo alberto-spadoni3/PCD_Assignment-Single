@@ -10,12 +10,12 @@ import java.util.Set;
 public class PuzzleListenerImpl implements PuzzleListener {
 
     @Override
-    public void UpdatePuzzle(List<Tile> tiles) throws RemoteException {
+    public void updatePuzzle(List<Tile> tiles) throws RemoteException {
         NodeHandlerSingleton.getInstance().updateLocalModel(tiles);
     }
 
     @Override
-    public void UpdateListener(Set<PuzzleListener> listeners) throws RemoteException {
+    public void updateListener(Set<PuzzleListener> listeners) throws RemoteException {
         NodeHandlerSingleton.getInstance().updateNodesListeners(listeners);
     }
 

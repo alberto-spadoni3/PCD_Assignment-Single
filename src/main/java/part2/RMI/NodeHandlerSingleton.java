@@ -126,7 +126,6 @@ public class NodeHandlerSingleton {
             remoteReference.communicateEndGame();
         } catch (RemoteException e) {
             System.out.println("ERRORE: impossibile disconnetere il main listener...");
-            //e.printStackTrace();
         }
     }
 

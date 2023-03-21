@@ -7,7 +7,6 @@ import part2.actors.utility.StringEnum;
 import java.util.List;
 
 public class PuzzleLocalImpl implements PuzzleLocal {
-
     private final PuzzleBoard board;
     private final StringEnum imagePuzzle = StringEnum.IMAGE1;
 

@@ -10,11 +10,8 @@ import java.util.List;
 import java.util.Set;
 
 public class PuzzleRemoteImpl implements PuzzleRemote, Serializable {
-
     private final Set<PuzzleListener> listeners;
-
     private PuzzleListener mainListener;
-
     private List<Tile> tiles;
 
     public PuzzleRemoteImpl(List<Tile> tiles) {
@@ -62,8 +59,8 @@ public class PuzzleRemoteImpl implements PuzzleRemote, Serializable {
         for (PuzzleListener listener : listeners) {
             try {
                 switch (action) {
-                    case UPDATE_PUZZLE -> listener.UpdatePuzzle(tiles);
-                    case UPDATE_LISTENERS -> listener.UpdateListener(listeners);
+                    case UPDATE_PUZZLE -> listener.updatePuzzle(tiles);
+                    case UPDATE_LISTENERS -> listener.updateListener(listeners);
                     case ENDGAME -> {
                         if(!listener.equals(mainListener))
                             listener.endGame();
