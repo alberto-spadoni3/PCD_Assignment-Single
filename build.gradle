@@ -1,82 +1,71 @@
-apply plugin: 'java'
+plugins {
+    id 'java'
+}
 
 def versions = [
         ScalaBinary: "2.13",
         AkkaVersion: "2.7.0"
 ]
 
-task threadsCLI(type: JavaExec) {
+tasks.register('threadsCLI', JavaExec) {
     classpath = sourceSets.main.runtimeClasspath
-
-    main = 'part1.threads.cli.Main'
+    setMainClass('part1.threads.cli.Main')
 }
 
-task threadsGUI(type: JavaExec) {
+tasks.register('threadsGUI', JavaExec) {
     classpath = sourceSets.main.runtimeClasspath
-
-    main = 'part1.threads.gui.Main'
+    setMainClass('part1.threads.gui.Main')
 }
 
-task tasksCLI(type: JavaExec) {
+tasks.register('tasksCLI', JavaExec) {
     classpath = sourceSets.main.runtimeClasspath
-
-    main = 'part1.tasks.cli.Main'
+    setMainClass('part1.tasks.cli.Main')
 }
 
-task tasksGUI(type: JavaExec) {
+tasks.register('tasksGUI', JavaExec) {
     classpath = sourceSets.main.runtimeClasspath
-
-    main = 'part1.tasks.gui.Main'
+    setMainClass('part1.tasks.gui.Main')
 }
 
-task rxCLI(type: JavaExec) {
+tasks.register('rxCLI', JavaExec) {
     classpath = sourceSets.main.runtimeClasspath
-
-    main = 'part1.reactive.cli.Main'
+    setMainClass('part1.reactive.cli.Main')
 }
 
-task rxGUI(type: JavaExec) {
+tasks.register('rxGUI', JavaExec) {
     classpath = sourceSets.main.runtimeClasspath
-
-    main = 'part1.reactive.gui.Main'
+    setMainClass('part1.reactive.gui.Main')
 }
 
-task eventloopCLI(type: JavaExec) {
+tasks.register('eventloopCLI', JavaExec) {
     classpath = sourceSets.main.runtimeClasspath
-
-    main = 'part1.eventloop.cli.Main'
+    setMainClass('part1.eventloop.cli.Main')
 }
 
-task eventloopGUI(type: JavaExec) {
+tasks.register('eventloopGUI', JavaExec) {
     classpath = sourceSets.main.runtimeClasspath
-
-    main = 'part1.eventloop.gui.Main'
+    setMainClass('part1.eventloop.gui.Main')
 }
 
-task actorsCLI(type: JavaExec) {
+tasks.register('actorsCLI', JavaExec) {
     classpath = sourceSets.main.runtimeClasspath
-
-    main = 'part1.actors.cli.Main'
+    setMainClass('part1.actors.cli.Main')
 }
 
-task actorsGUI(type: JavaExec) {
+tasks.register('actorsGUI', JavaExec) {
     classpath = sourceSets.main.runtimeClasspath
-
-    main = 'part1.actors.gui.Main'
+    setMainClass('part1.actors.gui.Main')
 }
 
-task actorsRMI(type: JavaExec) {
+tasks.register('actorsRMI', JavaExec) {
     classpath = sourceSets.main.runtimeClasspath
-
-    main = 'part2.RMI.Main'
+    setMainClass('part2.RMI.Main')
 }
 
-task actorsSD(type: JavaExec) {
+tasks.register('actorsSD', JavaExec) {
     classpath = sourceSets.main.runtimeClasspath
-
-    main = 'part2.actors.Main'
+    setMainClass('part2.actors.Main')
 }
-
 
 repositories {
     mavenCentral()
@@ -103,5 +92,4 @@ dependencies {
 
     implementation("org.slf4j:slf4j-api:1.7.5")
     //implementation("org.slf4j:slf4j-log4j12:1.7.5")
-
 }
