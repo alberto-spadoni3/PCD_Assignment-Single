@@ -76,6 +76,8 @@ public class FileLoader extends ActiveComponent {
             log("Loaded " + doc.getName());
 
             documentLoaded.close();
+            // we need to clean this variable before the next item elaboration to avoid
+            // multiple documents content to be written together
             documentText.delete(0, documentText.length());
             subscriber.onComplete();
         });

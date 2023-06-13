@@ -30,9 +30,8 @@ public class ConcurrentBuffer<T> {
     }
 
     public T get() throws BufferClosedException, InterruptedException {
+        this.mutex.lock();
         try {
-            this.mutex.lock();
-
             while (this.isEmptyAndNotClosed())
                 this.notEmpty.await();
 
@@ -47,8 +46,8 @@ public class ConcurrentBuffer<T> {
     }
 
     public void closeBuffer() {
+        this.mutex.lock();
         try {
-            this.mutex.lock();
             this.closed = true;
             this.notEmpty.signalAll();
         } finally {

@@ -291,9 +291,11 @@ public class GUI extends JFrame {
     }
 
     private void resetResultLabels() {
-        this.docFoundLabel.setText("0");
-        this.docAnalyzedLabel.setText("0");
-        this.docWithWordLabel.setText("0");
+        SwingUtilities.invokeLater(() -> {
+            this.docFoundLabel.setText("0");
+            this.docAnalyzedLabel.setText("0");
+            this.docWithWordLabel.setText("0");
+        });
     }
 
     public void changeState(String state) {

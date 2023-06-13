@@ -34,7 +34,7 @@ public class FileDiscoverer {
             explore(rootDirectory, subscriber);
             subscriber.onComplete();
         });
-}
+    }
 
     private void explore(File rootDirectory, ObservableEmitter<File> subscriber) {
         if (this.GUIVersion) {

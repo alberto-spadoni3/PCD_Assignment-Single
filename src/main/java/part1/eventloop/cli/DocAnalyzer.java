@@ -57,34 +57,29 @@ public class DocAnalyzer extends AbstractVerticle {
                     if (terminationFlag.isPaused())
                         terminationFlag.waitToBeResumed();
 
-                    String[] words = this.splitText(document.getString("content"));
-                    for (String word : words) {
-                        if (wordToFind.equals(word.toLowerCase())) {
-                            documentsCounter.incrementWordOccurrence();
-                            String s = "Word " + word + " found inside " + document.getString("filename");
-                            System.out.println(s);
-                            break;
-                        }
-                    }
-                    documentsCounter.incrementDocumentsAnalyzed();
+                    searchWord(document, wordToFind);
                 }
                 promise.complete();
             }, false);
         } else {
             return vertx.executeBlocking(promise -> {
-                String[] words = this.splitText(document.getString("content"));
-                for (String word : words) {
-                    if (wordToFind.equals(word.toLowerCase())) {
-                        documentsCounter.incrementWordOccurrence();
-                        String s = "Word " + wordToFind + " found inside " + document.getString("filename");
-                        System.out.println(s);
-                        break;
-                    }
-                }
-                documentsCounter.incrementDocumentsAnalyzed();
+                searchWord(document, wordToFind);
                 promise.complete();
             }, false);
         }
+    }
+
+    private void searchWord(JsonObject document, String wordToFind) {
+        String[] words = this.splitText(document.getString("content"));
+        for (String word : words) {
+            if (wordToFind.equals(word.toLowerCase())) {
+                documentsCounter.incrementWordOccurrence();
+                String s = "Word " + wordToFind + " found inside " + document.getString("filename");
+                System.out.println(s);
+                break;
+            }
+        }
+        documentsCounter.incrementDocumentsAnalyzed();
     }
 
     private String[] splitText(String textToSplit) {

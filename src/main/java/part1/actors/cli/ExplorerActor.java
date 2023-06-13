@@ -131,11 +131,8 @@ public class ExplorerActor extends AbstractBehavior<RootActor.Command> {
     }
 
     private Behavior<RootActor.Command> onChildrenTermination(Terminated command) {
-        Behavior<RootActor.Command> behavior = Behaviors.same();
         this.childActors.remove(command.actorRef);
-        if (childActors.isEmpty())
-            behavior = Behaviors.stopped();
-        return behavior;
+        return childActors.isEmpty() ? Behaviors.stopped() : Behaviors.same();
     }
 
     private Behavior<RootActor.Command> onPostStop() {

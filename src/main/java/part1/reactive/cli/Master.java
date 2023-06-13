@@ -37,7 +37,7 @@ public class Master implements Runnable {
                 long duration = System.currentTimeMillis() - start;
                 log("Done in: " + duration + " ms");
                 log("Documents found: " + documentsCounter.getDocumentsFound());
-                log("Word occurrences: " + documentsCounter.getWordOccurrences());
+                log("Word occurrences: " + wordOccurrences);
                 System.exit(0);
             }, Throwable::printStackTrace);
     }

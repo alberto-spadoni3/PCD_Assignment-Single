@@ -10,7 +10,7 @@ public class Main {
         }
 
         File rootDirectory = new File(args[0]);
-        String wordToSearch = args[1];
+        String wordToSearch = args[1].toLowerCase();
 
         System.out.println("SOLUTION BASED ON THREADS APPROACH");
 

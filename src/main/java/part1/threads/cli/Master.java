@@ -34,7 +34,7 @@ public class Master extends Worker {
 
         MyLatch allDocumentsAnalyzed = new MyLatch(nAnalyzerThreads);
         for (int i = 0; i < nAnalyzerThreads; i++)
-            new Analyzer(i, documentsLoaded, docCounter, this.wordToFind.toLowerCase(), allDocumentsAnalyzed).start();
+            new Analyzer(i, documentsLoaded, docCounter, this.wordToFind, allDocumentsAnalyzed).start();
 
         try {
             allDocumentsLoaded.await();
