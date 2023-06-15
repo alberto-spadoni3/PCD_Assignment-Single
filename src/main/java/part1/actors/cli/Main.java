@@ -17,7 +17,11 @@ public class Main {
 
         System.out.println("SOLUTION BASED ON THE ACTORS APPROACH");
 
-        ActorSystem<RootActor.Command> actorSystem = ActorSystem.create(RootActor.create(new DocumentsCounter(), new File(rootDirectory), wordToFind), "guardian");
+        ActorSystem<RootActor.Command> actorSystem = ActorSystem.create(
+                RootActor.create(new DocumentsCounter(),
+                                 new File(rootDirectory),
+                                 wordToFind)
+                , "guardian");
 
         actorSystem.tell(RootActor.StartComputation.INSTANCE);
     }

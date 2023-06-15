@@ -71,13 +71,13 @@ public class LoaderActor extends AbstractBehavior<RootActor.Command> {
     public Receive<RootActor.Command> createReceive() {
         return newReceiveBuilder()
                 .onMessage(LoadFile.class, this::loadDocument)
-                .onMessageEquals(ChildTerminated.INSTANCE, this::onChildTermination)
+                .onMessageEquals(LoaderActor.ChildTerminated.INSTANCE, this::onChildTermination)
                 .onSignal(PostStop.class, signal -> onPostStop())
                 .build();
     }
 
     private Behavior<RootActor.Command> loadDocument(LoadFile command) {
-        this.parentActorRef.tell(new ExplorerActor.WatchMe(getContext().getSelf()));
+        this.parentActorRef.tell(new ExplorerActor.WatchChild(getContext().getSelf()));
         getContext().getLog().info("Loading file: " + command.fileName.getName());
         try {
             PDDocument documentLoaded = PDDocument.load(command.fileName);
@@ -131,7 +131,7 @@ public class LoaderActor extends AbstractBehavior<RootActor.Command> {
     }
 
     private Behavior<RootActor.Command> onChildTermination() {
-        this.parentActorRef.tell(new ExplorerActor.Terminated(getContext().getSelf()));
+        this.parentActorRef.tell(new ExplorerActor.ChildTerminated(getContext().getSelf()));
         return Behaviors.stopped();
     }
 

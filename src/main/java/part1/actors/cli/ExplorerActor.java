@@ -29,18 +29,18 @@ public class ExplorerActor extends AbstractBehavior<RootActor.Command> {
         }
     }
 
-    public static final class WatchMe implements RootActor.Command {
+    public static final class WatchChild implements RootActor.Command {
         public final ActorRef<RootActor.Command> actorRef;
 
-        public WatchMe(ActorRef<RootActor.Command> actorRef) {
+        public WatchChild(ActorRef<RootActor.Command> actorRef) {
             this.actorRef = actorRef;
         }
     }
 
-    public static final class Terminated implements RootActor.Command {
+    public static final class ChildTerminated implements RootActor.Command {
         public final ActorRef<RootActor.Command> actorRef;
 
-        public Terminated(ActorRef<RootActor.Command> actorRef) {
+        public ChildTerminated(ActorRef<RootActor.Command> actorRef) {
             this.actorRef = actorRef;
         }
     }
@@ -77,8 +77,8 @@ public class ExplorerActor extends AbstractBehavior<RootActor.Command> {
     public Receive<RootActor.Command> createReceive() {
         return newReceiveBuilder()
                 .onMessage(StartExploring.class, this::onStartExploring)
-                .onMessage(Terminated.class, this::onChildrenTermination)
-                .onMessage(WatchMe.class, this::watchActors)
+                .onMessage(ChildTerminated.class, this::onChildrenTermination)
+                .onMessage(WatchChild.class, this::watchActors)
                 .onSignal(PostStop.class, signal -> onPostStop())
                 .build();
     }
@@ -91,10 +91,11 @@ public class ExplorerActor extends AbstractBehavior<RootActor.Command> {
                     if (file.isDirectory())
                         this.discover(file, command);
                     else if (file.getName().toLowerCase().endsWith(".pdf")) {
-                        getContext()
-                                .spawn(LoaderActor.createGUI(documentsCounter, getContext().getSelf(), terminationFlag), "Loader-" + this.id.getAndIncrement(),
-                                        DispatcherSelector.blocking())
-                                .tell(new LoaderActor.LoadFile(file, command.wordToFind));
+                        getContext().spawn(
+                                    LoaderActor.createGUI(documentsCounter, getContext().getSelf(), terminationFlag),
+                                    "Loader-" + this.id.getAndIncrement(),
+                                    DispatcherSelector.blocking()
+                                ).tell(new LoaderActor.LoadFile(file, command.wordToFind));
                         getContext().getLog().debug("Found -> " + file.getName());
                         this.documentsCounter.incrementDocumentsFound();
                     }
@@ -108,10 +109,11 @@ public class ExplorerActor extends AbstractBehavior<RootActor.Command> {
                 if (file.isDirectory())
                     this.discover(file, command);
                 else if (file.getName().toLowerCase().endsWith(".pdf")) {
-                    getContext()
-                            .spawn(LoaderActor.create(documentsCounter, getContext().getSelf()), "Loader-" + this.id.getAndIncrement(),
-                                    DispatcherSelector.blocking())
-                            .tell(new LoaderActor.LoadFile(file, command.wordToFind));
+                    getContext().spawn(
+                                LoaderActor.create(documentsCounter, getContext().getSelf()),
+                                "Loader-" + this.id.getAndIncrement(),
+                                DispatcherSelector.blocking()
+                            ).tell(new LoaderActor.LoadFile(file, command.wordToFind));
                     getContext().getLog().debug("Found -> " + file.getName());
                     this.documentsCounter.incrementDocumentsFound();
                 }
@@ -125,12 +127,12 @@ public class ExplorerActor extends AbstractBehavior<RootActor.Command> {
         return Behaviors.same();
     }
 
-    private Behavior<RootActor.Command> watchActors(WatchMe command) {
+    private Behavior<RootActor.Command> watchActors(WatchChild command) {
         this.childActors.add(command.actorRef);
         return Behaviors.same();
     }
 
-    private Behavior<RootActor.Command> onChildrenTermination(Terminated command) {
+    private Behavior<RootActor.Command> onChildrenTermination(ChildTerminated command) {
         this.childActors.remove(command.actorRef);
         return childActors.isEmpty() ? Behaviors.stopped() : Behaviors.same();
     }

@@ -8,9 +8,9 @@ import akka.actor.typed.javadsl.ActorContext;
 import akka.actor.typed.javadsl.Behaviors;
 import akka.actor.typed.javadsl.Receive;
 import part1.actors.gui.GUIUpdaterActor;
-import part1.threads.cli.DocumentsCounter;
 import part1.common.TerminationFlag;
 import part1.common.View;
+import part1.threads.cli.DocumentsCounter;
 
 import java.io.File;
 
@@ -88,7 +88,7 @@ public class RootActor extends AbstractBehavior<RootActor.Command> {
         getContext().getLog().info("Documents found: " + documentsCounter.getDocumentsFound());
         getContext().getLog().info("Word occurrences: " + documentsCounter.getWordOccurrences());
 
-        if(this.GUIVersion) {
+        if (this.GUIVersion) {
             view.setComputationDuration(duration);
             view.computationDone();
             this.terminationFlag.stop();
@@ -99,21 +99,20 @@ public class RootActor extends AbstractBehavior<RootActor.Command> {
 
     private Behavior<Command> startComputation() {
         if (this.GUIVersion) {
-            getContext().spawn(ExplorerActor.createGUI(documentsCounter, getContext().getSelf(), terminationFlag)
-                            , "Explorer")
-                    .tell(new ExplorerActor.StartExploring(rootDir, wordToFind));
+            getContext().spawn(
+                            ExplorerActor.createGUI(documentsCounter, getContext().getSelf(), terminationFlag),
+                            "Explorer"
+                        ).tell(new ExplorerActor.StartExploring(rootDir, wordToFind));
 
             getContext().getSelf().tell(StartUpdatingGui.INSTANCE);
-
-            startTime = System.currentTimeMillis();
-            return Behaviors.same();
         } else {
-            getContext().spawn(ExplorerActor.create(documentsCounter, getContext().getSelf())
-                            , "Explorer")
-                    .tell(new ExplorerActor.StartExploring(rootDir, wordToFind));
-            startTime = System.currentTimeMillis();
-            return Behaviors.same();
+            getContext().spawn(
+                            ExplorerActor.create(documentsCounter, getContext().getSelf()),
+                            "Explorer"
+                        ).tell(new ExplorerActor.StartExploring(rootDir, wordToFind));
         }
+        startTime = System.currentTimeMillis();
+        return Behaviors.same();
     }
 
     private Behavior<Command> onPostStop() {
