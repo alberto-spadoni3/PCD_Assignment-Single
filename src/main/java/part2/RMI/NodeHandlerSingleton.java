@@ -79,7 +79,6 @@ public class NodeHandlerSingleton {
         remoteReference = (PuzzleRemote) registry.lookup(remoteModelName);
         localReference = new PuzzleLocalImpl(remoteReference.getTiles());
         initListener();
-        registry.rebind(remoteModelName, remoteReference);
         localReference.setVisible();
     }
 
@@ -113,6 +112,7 @@ public class NodeHandlerSingleton {
                 bindRemoteReference();
                 remoteReference.setMainListener(listener);
                 remoteReference.addListeners(nodesListeners);
+
                 remoteReference.setTiles(tiles);
             } catch (RemoteException ex) {
                 System.out.println("ERRORE: impossibile creare un nuovo remote puzzle");
@@ -125,7 +125,7 @@ public class NodeHandlerSingleton {
         try {
             remoteReference.communicateEndGame();
         } catch (RemoteException e) {
-            System.out.println("ERRORE: impossibile disconnetere il main listener...");
+            System.out.println("ERRORE: impossibile disconnettere il main listener...");
         }
     }
 

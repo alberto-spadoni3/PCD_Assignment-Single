@@ -85,8 +85,10 @@ public class PuzzleBoard extends JFrame {
             final TileButton btn = new TileButton(tile);
             board.add(btn);
             btn.setBorder(BorderFactory.createLineBorder(Color.gray));
-            btn.addActionListener(actionListener -> selectionManager.selectTile(tile,
-                    () -> NodeHandlerSingleton.getInstance().handleSwap(this.tiles)));
+            btn.addActionListener(actionListener ->
+                    selectionManager.selectTile(tile,
+                                                () -> NodeHandlerSingleton.getInstance().handleSwap(this.tiles))
+            );
         });
         checkSolution();
         pack();
