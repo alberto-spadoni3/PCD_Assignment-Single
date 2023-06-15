@@ -11,7 +11,6 @@ public class TileButton extends JButton {
 
 	public TileButton(final Tile tile) {
 		super(new ImageIcon(tile.getImage()));
-
 		selected = false;
 
 		addMouseListener(new MouseAdapter() {
@@ -19,7 +18,7 @@ public class TileButton extends JButton {
 			public void mouseClicked(final MouseEvent e) {
 				selected = !selected;
 				if(selected) {
-					setBorder(BorderFactory.createLineBorder(Color.red));
+					setBorder(BorderFactory.createLineBorder(Color.yellow, 3));
 				} else {
 					setBorder(BorderFactory.createLineBorder(Color.gray));
 				}
