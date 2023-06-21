@@ -1,6 +1,8 @@
 package part1.reactive.gui;
 
+import io.reactivex.rxjava3.annotations.NonNull;
 import io.reactivex.rxjava3.core.Observable;
+import io.reactivex.rxjava3.schedulers.Schedulers;
 import part1.threads.cli.Document;
 import part1.threads.cli.DocumentsCounter;
 import part1.common.TerminationFlag;
@@ -10,7 +12,9 @@ import part1.reactive.cli.FileLoader;
 import part1.reactive.cli.DocAnalyzer;
 
 import java.io.File;
+import java.util.List;
 import java.util.concurrent.Executors;
+import java.util.concurrent.TimeUnit;
 
 public class Master implements Runnable {
     private final File rootDirectory;
@@ -41,9 +45,10 @@ public class Master implements Runnable {
         Observable<Boolean> wordOccurrencesStream = new DocAnalyzer(wordToFind, terminationFlag, documentsCounter)
                 .buildWordsStream(documentsStream);
 
-        GUIUpdater updater = new GUIUpdater(view, documentsCounter, terminationFlag);
-        var exec = Executors.newSingleThreadExecutor();
-        exec.execute(updater);
+        Observable<Long> GUIUpdaterStream = Observable.interval(20, TimeUnit.MILLISECONDS, Schedulers.single());
+        GUIUpdaterStream
+                .takeUntil(n -> n >= 0 && !terminationFlag.isNotStopped())
+                .subscribe(__ -> this.updateGUI());
 
         wordOccurrencesStream
                 .filter(wordOccurrence -> wordOccurrence)
@@ -56,12 +61,16 @@ public class Master implements Runnable {
                     log("Documents found: " + documentsCounter.getDocumentsFound());
                     log("Word occurrences: " + documentsCounter.getWordOccurrences());
                     terminationFlag.stop();
-                    exec.shutdown();
                 }, Throwable::printStackTrace);
     }
 
     private void log(String message) {
         String currentThreadName = Thread.currentThread().getName();
         System.out.println("[" + currentThreadName + "] " + message);
+    }
+
+    private void updateGUI() {
+        List<Integer> temp = documentsCounter.getDocFoundAnalyzedAndWordOccurences();
+        view.update(temp.get(0), temp.get(1), temp.get(2));
     }
 }
