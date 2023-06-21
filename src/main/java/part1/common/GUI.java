@@ -55,7 +55,7 @@ public class GUI extends JFrame {
 
     private void setUpSelectionPanel() {
         JPanel baseSelectionPanel = new JPanel();
-        baseSelectionPanel.setPreferredSize(new Dimension(350, 110));
+        baseSelectionPanel.setPreferredSize(new Dimension(350, 116));
         baseSelectionPanel.setLayout(new BoxLayout(baseSelectionPanel, BoxLayout.Y_AXIS));
 
         JPanel dirSelectionPanel = new JPanel();
@@ -81,7 +81,7 @@ public class GUI extends JFrame {
 
     private void setUpResultsAndActionPanel() {
         JPanel resActionPanel = new JPanel();
-        resActionPanel.setPreferredSize(new Dimension(450, 133));
+        resActionPanel.setPreferredSize(new Dimension(450, 135));
 
         resActionPanel.add(this.setUpActionsPanel());
         resActionPanel.add(this.setUpResultsPanel());
