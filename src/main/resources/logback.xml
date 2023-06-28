@@ -1,0 +1,3 @@
+<configuration>
+    <logger name="io.vertx" level="WARN" />
+</configuration>
