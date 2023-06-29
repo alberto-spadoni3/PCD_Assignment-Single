@@ -49,7 +49,7 @@ public class PuzzleRemoteImpl implements PuzzleRemote, Serializable {
     }
 
     @Override
-    public void communicateEndGame() throws RemoteException {
+    public synchronized void communicateEndGame() throws RemoteException {
         runListeners(ListenerAction.ENDGAME);
         mainListener.endGame();
     }

@@ -19,12 +19,12 @@ public class PuzzleHandler {
     }
 
     public void peerJoiningHandler(Address actorAddress) {
-        myPeer.log(actorAddress.toString() + " si e' collegato al cluster");
-
         if (myPeer.isMyInitialization(actorAddress)) {
+            myPeer.log("Mi sono collegato al cluster");
             myPeer.initLamportClock();
             myLockHandler.getLocksAndInitialize();
         } else {
+            myPeer.log(actorAddress.toString() + " si e' collegato al cluster");
             myPeer.addPeer(actorAddress);
             myLockHandler.peerJoining(actorAddress);
         }
@@ -75,7 +75,7 @@ public class PuzzleHandler {
                 myPeer.initializePeer(senderAddress);
                 ClusterSingleton.getInstance().getActorFromAddress(senderAddress)
                         .tell(MessageFactory.createInitBoardAck(myPeer.getClock(), myPeer.getPuzzleTiles()),
-                                ClusterSingleton.getInstance().getSelf());
+                              ClusterSingleton.getInstance().getSelf());
             }
             case BOARD_UPDATED -> myLockHandler.ackReceived(senderAddress);
         }

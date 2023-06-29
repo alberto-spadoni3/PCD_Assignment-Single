@@ -57,12 +57,12 @@ tasks.register('actorsGUI', JavaExec) {
     setMainClass('part1.actors.gui.Main')
 }
 
-tasks.register('actorsRMI', JavaExec) {
+tasks.register('rmiD', JavaExec) {
     classpath = sourceSets.main.runtimeClasspath
     setMainClass('part2.RMI.Main')
 }
 
-tasks.register('actorsSD', JavaExec) {
+tasks.register('actorsD', JavaExec) {
     classpath = sourceSets.main.runtimeClasspath
     setMainClass('part2.actors.Main')
 }

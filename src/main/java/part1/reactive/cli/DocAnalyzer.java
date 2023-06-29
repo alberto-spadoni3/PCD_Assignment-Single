@@ -27,28 +27,25 @@ public class DocAnalyzer extends ActiveComponent {
     }
 
     public Observable<Boolean> buildWordsStream(Observable<Document> source) {
-        if (this.GUIVersion) {
-            return source
-                    .observeOn(Schedulers.computation())
-                    .flatMap(documentToAnalyze -> {
-                        //log("Start analyzing");
+        return source
+                .observeOn(Schedulers.computation())
+                .flatMap(documentToAnalyze -> {
+                    log("Start analyzing");
+                    if (this.GUIVersion) {
                         if (terminationFlag.isNotStopped()) {
                             if (terminationFlag.isPaused()) {
                                 terminationFlag.waitToBeResumed();
                             }
                             return buildResult(documentToAnalyze);
                         }
-                        else
-                            log("Analyzer stopped");
+                        log("Analyzer stopped");
 
                         return Observable.empty();
-                    });
-        } else {
-            //log("Start analyzing");
-            return source
-                    .observeOn(Schedulers.computation())
-                    .flatMap(this::buildResult);
-        }
+                    } else {
+                        log("Analyzer stopped");
+                        return buildResult(documentToAnalyze);
+                    }
+                });
     }
 
     private Observable<Boolean> buildResult(Document documentToAnalyze) {

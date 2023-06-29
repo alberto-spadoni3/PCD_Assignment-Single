@@ -39,8 +39,10 @@ public class Peer {
 
     public void addPeer(Address peer) {
         if (initialized) {
+            log("Sono inizializzato e aggiungo il nodo appena entrato negli uninitialized");
             uninitializedPeer.add(peer);
         } else {
+            log("Sto ricevendo questo messaggio dal nodo che era già nel cluster prima di me");
             initializedPeer.add(peer);
         }
     }

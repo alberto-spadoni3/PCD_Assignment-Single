@@ -6,10 +6,10 @@ import akka.actor.typed.javadsl.AbstractBehavior;
 import akka.actor.typed.javadsl.ActorContext;
 import akka.actor.typed.javadsl.Behaviors;
 import akka.actor.typed.javadsl.Receive;
-import part1.threads.cli.DocumentsCounter;
+import part1.actors.cli.RootActor;
 import part1.common.TerminationFlag;
 import part1.common.View;
-import part1.actors.cli.RootActor;
+import part1.threads.cli.DocumentsCounter;
 
 import java.util.List;
 
@@ -44,8 +44,8 @@ public class GUIUpdaterActor extends AbstractBehavior<RootActor.Command> {
     private Behavior<RootActor.Command> onPostStop() {
         // Updating the view for the last time before stopping the actor
         view.update(documentsCounter.getDocumentsFound(),
-                documentsCounter.getDocumentsAnalyzed(),
-                documentsCounter.getWordOccurrences());
+                    documentsCounter.getDocumentsAnalyzed(),
+                    documentsCounter.getWordOccurrences());
         return Behaviors.same();
     }
 
@@ -60,6 +60,4 @@ public class GUIUpdaterActor extends AbstractBehavior<RootActor.Command> {
 
         return Behaviors.same();
     }
-
-
 }

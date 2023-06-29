@@ -95,10 +95,13 @@ public class PuzzleBoard extends JFrame {
             final TileButton btn = new TileButton(tile);
             board.add(btn);
             btn.setBorder(BorderFactory.createLineBorder(Color.gray));
-            btn.addActionListener(actionListener -> selectionManager.selectTile(tile, () -> {
-                paintPuzzle(board);
-                actorRef.tell(MessageFactory.createSwapTilesMessage(), actorRef);
-            }));
+            btn.addActionListener(actionListener -> selectionManager.selectTile(
+                            tile,
+                            () -> {
+                                paintPuzzle(board);
+                                actorRef.tell(MessageFactory.createSwapTilesMessage(), actorRef);
+                            }
+            ));
         });
         checkSolution();
         pack();
@@ -106,7 +109,7 @@ public class PuzzleBoard extends JFrame {
 
     private void checkSolution() {
         if (tiles.stream().allMatch(Tile::isInRightPlace)) {
-            //Necessario perché altrimenti l'attore che completa il puzzle si scollega senza comunicarlo agli altri
+            // Necessario perché altrimenti l'attore che completa il puzzle si scollega senza comunicarlo agli altri
             actorRef.tell(MessageFactory.createSwapTilesMessage(), actorRef);
 
             ClusterSingleton.getInstance().downActor(ClusterSingleton.getInstance().getMyAddress());

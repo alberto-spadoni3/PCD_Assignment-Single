@@ -47,7 +47,7 @@ public class Master implements Runnable {
 
         Observable<Long> GUIUpdaterStream = Observable.interval(20, TimeUnit.MILLISECONDS, Schedulers.single());
         GUIUpdaterStream
-                .takeUntil(n -> n >= 0 && !terminationFlag.isNotStopped())
+                .takeUntil(__ -> !terminationFlag.isNotStopped())
                 .subscribe(__ -> this.updateGUI());
 
         wordOccurrencesStream

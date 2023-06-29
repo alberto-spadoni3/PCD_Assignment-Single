@@ -109,14 +109,16 @@ public class LockHandler {
         grantQueue.clear();
         hasLock = true;
         switch (operationToExecute) {
-            case INIT -> myPeer.getInitializedPeers().forEach(node -> ClusterSingleton.getInstance()
-                    .getActorFromAddress(node)
+            case INIT -> myPeer.getInitializedPeers().forEach(node ->
+                    ClusterSingleton.getInstance().getActorFromAddress(node)
                     .tell(MessageFactory.createInitBoardReq(myPeer.getClock()),
-                            ClusterSingleton.getInstance().getSelf()));
-            case UPDATE -> myPeer.getInitializedPeers().forEach(node -> ClusterSingleton.getInstance()
-                    .getActorFromAddress(node)
+                          ClusterSingleton.getInstance().getSelf())
+            );
+            case UPDATE -> myPeer.getInitializedPeers().forEach(node ->
+                    ClusterSingleton.getInstance().getActorFromAddress(node)
                     .tell(MessageFactory.createUpdateBoard(myPeer.getClock(), myPeer.getPuzzleTiles()),
-                            ClusterSingleton.getInstance().getSelf()));
+                          ClusterSingleton.getInstance().getSelf())
+            );
         }
     }
 
