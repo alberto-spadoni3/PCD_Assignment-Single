@@ -1,19 +1,17 @@
 package part1.reactive.gui;
 
-import io.reactivex.rxjava3.annotations.NonNull;
 import io.reactivex.rxjava3.core.Observable;
 import io.reactivex.rxjava3.schedulers.Schedulers;
-import part1.threads.cli.Document;
-import part1.threads.cli.DocumentsCounter;
 import part1.common.TerminationFlag;
 import part1.common.View;
+import part1.reactive.cli.DocAnalyzer;
 import part1.reactive.cli.FileDiscoverer;
 import part1.reactive.cli.FileLoader;
-import part1.reactive.cli.DocAnalyzer;
+import part1.threads.cli.Document;
+import part1.threads.cli.DocumentsCounter;
 
 import java.io.File;
 import java.util.List;
-import java.util.concurrent.Executors;
 import java.util.concurrent.TimeUnit;
 
 public class Master implements Runnable {

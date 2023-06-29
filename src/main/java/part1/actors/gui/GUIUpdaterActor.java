@@ -15,7 +15,7 @@ import java.util.List;
 
 public class GUIUpdaterActor extends AbstractBehavior<RootActor.Command> {
     public enum UpdateGUI implements RootActor.Command {
-        INSTANCE;
+        INSTANCE
     }
 
     private final View view;
