@@ -34,7 +34,7 @@ public class LockHandler {
 
     public void getLocksAndInitialize() {
         if (myPeer.isAlone()) {
-            myPeer.log("inizializzo il puzzle");
+            myPeer.log("Inizializzo il puzzle");
 
             myPeer.initialize();
         } else {
@@ -51,7 +51,8 @@ public class LockHandler {
     }
 
     private void manageLockAcquisition() {
-        myPeer.log("devo aggiornare il puzzle. Invio richiesta lock");
+        myPeer.log("Devo " + (myPeer.isInitialized() ? "aggiornare" : "inizializzare") +
+                        " il puzzle. Invio richiesta lock");
 
         wantLock = true;
         myPeer.incrementClock();
@@ -61,7 +62,7 @@ public class LockHandler {
 
     public void peerJoining(Address actorAddress) {
         if (needLock()) {
-            myPeer.log("si è unito " + actorAddress.toString() + ". Invio richiesta lock");
+            myPeer.log("Si è unito " + actorAddress.toString() + ". Invio richiesta lock");
 
             askLockTo(actorAddress);
         }
@@ -80,11 +81,11 @@ public class LockHandler {
     public void lockRequestReceived(Address actorAddress, MyLamportClock msgClock) {
         manageClock(msgClock);
         if (hasLock || (wantLock && myRequestClock.compareToClock(msgClock).equals(LESS))) {
-            myPeer.log("ricevuta richiesta del lock da " + actorAddress.toString() + ". METTO IN CODA LA RICHIESTA");
+            myPeer.log("Ricevuta richiesta del lock da " + actorAddress.toString() + ". METTO IN CODA LA RICHIESTA");
 
             requestQueue.add(actorAddress);
         } else {
-            myPeer.log("ricevuta richiesta del lock da " + actorAddress.toString() + ". INVIO ACK");
+            myPeer.log("Ricevuta richiesta del lock da " + actorAddress.toString() + ". INVIO ACK");
 
             grantLockTo(actorAddress);
         }
@@ -103,7 +104,7 @@ public class LockHandler {
     }
 
     private void executeCriticalSection() {
-        myPeer.log("ricevuti tutti gli ACK. Entro in sezione critica");
+        myPeer.log("Ricevuti tutti gli ACK. Entro in sezione critica");
 
         myPeer.incrementClock();
         grantQueue.clear();
@@ -130,7 +131,7 @@ public class LockHandler {
     }
 
     private void releaseLock() {
-        myPeer.log("rilascio il lock");
+        myPeer.log("Rilascio il lock");
 
         myPeer.incrementClock();
         hasLock = false;
